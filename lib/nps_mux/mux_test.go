@@ -9,7 +9,6 @@ import (
 	"math"
 	"net"
 	"net/http"
-	"net/http/httputil"
 	_ "net/http/pprof"
 	"os"
 	"strconv"
@@ -511,73 +510,6 @@ func client(ip string) {
 	if err != nil {
 		log.Println(err)
 	}
-}
-
-func test_request() {
-	conn, _ := net.Dial("tcp", "127.0.0.1:7777")
-	for i := 0; i < 1000; i++ {
-		_, _ = conn.Write([]byte(`GET / HTTP/1.1
-Host: 127.0.0.1:7777
-Connection: keep-alive
-
-
-`))
-		r, err := http.ReadResponse(bufio.NewReader(conn), nil)
-		if err != nil {
-			log.Println("close by read response err", err)
-			break
-		}
-		log.Println("read response success", r)
-		b, err := httputil.DumpResponse(r, true)
-		if err != nil {
-			log.Println("close by dump response err", err)
-			break
-		}
-		fmt.Println(string(b[:20]), err)
-		//time.Sleep(time.Second)
-	}
-	log.Println("finish")
-}
-
-func test_raw(k int) {
-	for i := 0; i < 1000; i++ {
-		ti := time.Now()
-		conn, err := net.Dial("tcp", "127.0.0.1:7777")
-		if err != nil {
-			log.Println("conn dial err", err)
-		}
-		tid := time.Now()
-		_, _ = conn.Write([]byte(`GET /videojs5/video.js HTTP/1.1
-Host: 127.0.0.1:7777
-
-
-`))
-		tiw := time.Now()
-		buf := make([]byte, 3572)
-		n, err := io.ReadFull(conn, buf)
-		//n, err := conn.Read(buf)
-		if err != nil {
-			log.Println("close by read response err", err)
-			break
-		}
-		log.Println(n, string(buf[:50]), "\n--------------\n", string(buf[n-50:n]))
-		//time.Sleep(time.Second)
-		err = conn.Close()
-		if err != nil {
-			log.Println("close conn err ", err)
-		}
-		now := time.Now()
-		du := now.Sub(ti).Seconds()
-		dud := now.Sub(tid).Seconds()
-		duw := now.Sub(tiw).Seconds()
-		if du > 1 {
-			log.Println("duration long", du, dud, duw, k, i)
-		}
-		if n != 3572 {
-			log.Println("n loss", n, string(buf))
-		}
-	}
-	log.Println("finish")
 }
 
 func TestNewConn(t *testing.T) {

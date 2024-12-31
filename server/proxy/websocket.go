@@ -53,17 +53,17 @@ func (rp *HttpReverseProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 
 	// 删除对认证信息的检查，让后端服务器处理 WebSocket 认证
 	/*
-	var accountMap map[string]string
-	if rp.task.MultiAccount == nil {
-		accountMap = nil
-	} else {
-		accountMap = rp.task.MultiAccount.AccountMap
-	}
-	if host.Client.Cnf.U != "" && host.Client.Cnf.P != "" && !common.CheckAuth(req, host.Client.Cnf.U, host.Client.Cnf.P, accountMap) {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte("Unauthorized"))
-		return
-	}
+		var accountMap map[string]string
+		if rp.task.MultiAccount == nil {
+			accountMap = nil
+		} else {
+			accountMap = rp.task.MultiAccount.AccountMap
+		}
+		if host.Client.Cnf.U != "" && host.Client.Cnf.P != "" && !common.CheckAuth(req, host.Client.Cnf.U, host.Client.Cnf.P, accountMap) {
+			rw.WriteHeader(http.StatusUnauthorized)
+			rw.Write([]byte("Unauthorized"))
+			return
+		}
 	*/
 
 	if targetAddr, err = host.Target.GetRandomTarget(); err != nil {
@@ -106,32 +106,6 @@ func (*flowConn) SetDeadline(t time.Time) error { return nil }
 func (*flowConn) SetReadDeadline(t time.Time) error { return nil }
 
 func (*flowConn) SetWriteDeadline(t time.Time) error { return nil }
-
-func GetClientAddr(r *http.Request) (*net.TCPAddr, error) {
-	// 从 RemoteAddr 提取 IP 和端口
-	host, portStr, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		return nil, err // 返回解析错误
-	}
-
-	// 解析 IP 地址
-	ip := net.ParseIP(host)
-	if ip == nil {
-		return nil, &net.AddrError{Err: "invalid IP address", Addr: host}
-	}
-
-	// 转换端口为整数
-	port, err := net.LookupPort("tcp", portStr)
-	if err != nil {
-		return nil, err // 返回端口解析错误
-	}
-
-	// 构造并返回 *net.TCPAddr
-	return &net.TCPAddr{
-		IP:   ip,
-		Port: port,
-	}, nil
-}
 
 func NewHttpReverseProxy(s *httpServer) *HttpReverseProxy {
 	rp := &HttpReverseProxy{

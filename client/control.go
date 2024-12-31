@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math"
-	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -325,95 +323,4 @@ func NewHttpProxyConn(url *url.URL, remoteAddr string) (net.Conn, error) {
 func basicAuth(username, password string) string {
 	auth := username + ":" + password
 	return base64.StdEncoding.EncodeToString([]byte(auth))
-}
-
-func getRemoteAddressFromServer(rAddr string, localConn *net.UDPConn, md5Password, role string, add int) error {
-	rAddr, err := getNextAddr(rAddr, add)
-	if err != nil {
-		logs.Error(err)
-		return err
-	}
-	addr, err := net.ResolveUDPAddr("udp", rAddr)
-	if err != nil {
-		return err
-	}
-	if _, err := localConn.WriteTo(common.GetWriteStr(md5Password, role), addr); err != nil {
-		return err
-	}
-	return nil
-}
-
-func newUdpConnByAddr(addr string) (*net.UDPConn, error) {
-	udpAddr, err := net.ResolveUDPAddr("udp", addr)
-	if err != nil {
-		return nil, err
-	}
-	udpConn, err := net.ListenUDP("udp", udpAddr)
-	if err != nil {
-		return nil, err
-	}
-	return udpConn, nil
-}
-
-func getNextAddr(addr string, n int) (string, error) {
-	arr := strings.Split(addr, ":")
-	if len(arr) != 2 {
-		return "", errors.New(fmt.Sprintf("the format of %s incorrect", addr))
-	}
-	if p, err := strconv.Atoi(arr[1]); err != nil {
-		return "", err
-	} else {
-		return arr[0] + ":" + strconv.Itoa(p+n), nil
-	}
-}
-
-func getAddrInterval(addr1, addr2, addr3 string) (int, error) {
-	arr1 := strings.Split(addr1, ":")
-	if len(arr1) != 2 {
-		return 0, errors.New(fmt.Sprintf("the format of %s incorrect", addr1))
-	}
-	arr2 := strings.Split(addr2, ":")
-	if len(arr2) != 2 {
-		return 0, errors.New(fmt.Sprintf("the format of %s incorrect", addr2))
-	}
-	arr3 := strings.Split(addr3, ":")
-	if len(arr3) != 2 {
-		return 0, errors.New(fmt.Sprintf("the format of %s incorrect", addr3))
-	}
-	p1, err := strconv.Atoi(arr1[1])
-	if err != nil {
-		return 0, err
-	}
-	p2, err := strconv.Atoi(arr2[1])
-	if err != nil {
-		return 0, err
-	}
-	p3, err := strconv.Atoi(arr3[1])
-	if err != nil {
-		return 0, err
-	}
-	interVal := int(math.Floor(math.Min(math.Abs(float64(p3-p2)), math.Abs(float64(p2-p1)))))
-	if p3-p1 < 0 {
-		return -interVal, nil
-	}
-	return interVal, nil
-}
-
-func getRandomPortArr(min, max int) []int {
-	if min > max {
-		min, max = max, min
-	}
-	addrAddr := make([]int, max-min+1)
-	for i := min; i <= max; i++ {
-		addrAddr[max-i] = i
-	}
-	rand.Seed(time.Now().UnixNano())
-	var r, temp int
-	for i := max - min; i > 0; i-- {
-		r = rand.Int() % i
-		temp = addrAddr[i]
-		addrAddr[i] = addrAddr[r]
-		addrAddr[r] = temp
-	}
-	return addrAddr
 }

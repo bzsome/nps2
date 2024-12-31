@@ -266,29 +266,6 @@ func dealMultiUser(s string) map[string]string {
 	return multiUserMap
 }
 
-func delLocalService(s string) *LocalServer {
-	l := new(LocalServer)
-	for _, v := range splitStr(s) {
-		item := strings.Split(v, "=")
-		if len(item) == 0 {
-			continue
-		} else if len(item) == 1 {
-			item = append(item, "")
-		}
-		switch item[0] {
-		case "local_port":
-			l.Port = common.GetIntNoErrByStr(item[1])
-		case "local_ip":
-			l.Ip = item[1]
-		case "password":
-			l.Password = item[1]
-		case "target_addr":
-			l.Target = item[1]
-		}
-	}
-	return l
-}
-
 func getAllTitle(content string) (arr []string, err error) {
 	var re *regexp.Regexp
 	re, err = regexp.Compile(`(?m)^\[[^\[\]\r\n]+\]`)

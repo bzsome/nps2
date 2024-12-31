@@ -218,7 +218,3 @@ func runDocker(dockerName, networkName, ip, testFunName, nowDir string) error {
 		"--cap-add=NET_ADMIN", "--ip", ip, "-v", nowDir+`:/usr/src/myapp`, "-w", `/usr/src/myapp`, "golang", "go", "test",
 		"-v", "-run", testFunName, "./"))
 }
-
-func stopDocker(dockerName string) error {
-	return runCmd(exec.Command("docker", "stop", dockerName))
-}
