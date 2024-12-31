@@ -2,7 +2,6 @@ package file
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"sort"
 	"strings"
@@ -94,16 +93,8 @@ func (s *DbUtils) GetIdByVerifyKey(vKey string, addr string) (id int, err error)
 
 func (s *DbUtils) NewTask(t *Tunnel) (err error) {
 	s.JsonDb.Tasks.Range(func(key, value interface{}) bool {
-		v := value.(*Tunnel)
-		if (v.Mode == "secret" || v.Mode == "p2p") && v.Password == t.Password {
-			err = errors.New(fmt.Sprintf("secret mode keys %s must be unique", t.Password))
-			return false
-		}
 		return true
 	})
-	if err != nil {
-		return
-	}
 	t.Flow = new(Flow)
 	s.JsonDb.Tasks.Store(t.Id, t)
 	s.JsonDb.StoreTasksToJsonFile()
@@ -328,7 +319,7 @@ func (s *DbUtils) GetHostById(id int) (h *Host, err error) {
 
 // get key by host from x
 func (s *DbUtils) GetInfoByHost(host string, r *http.Request) (h *Host, err error) {
-	var hosts []*Host // 存储所有可能匹配的 Host 项
+	var hosts []*Host               // 存储所有可能匹配的 Host 项
 	host = common.GetIpByAddr(host) // 处理带端口的主机名
 
 	// 遍历数据库中的所有 Host 项

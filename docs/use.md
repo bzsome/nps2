@@ -162,41 +162,6 @@ mode | socks5
 server_port | 在服务端的代理端口
 multi_account | socks5多账号配置文件（可选),配置后使用basic_username和basic_password无法通过认证 <br> multi_account.conf要与可执行文件npc同一目录，或者npc.conf里面写相对路径,conf/multi_account.conf
 
-#### 私密代理模式
-
-```ini
-[common]
-server_addr=1.1.1.1:8024
-vkey=123
-[secret_ssh]
-mode=secret
-password=ssh2
-target_addr=10.1.50.2:22
-```
-项 | 含义
----|---
-mode | secret
-password | 唯一密钥
-target_addr|内网目标
-
-#### p2p代理模式
-
-```ini
-[common]
-server_addr=1.1.1.1:8024
-vkey=123
-[p2p_ssh]
-mode=p2p
-password=ssh2
-target_addr=10.1.50.2:22
-```
-项 | 含义
----|---
-mode | p2p
-password | 唯一密钥
-target_addr|内网目标
-
-
 #### 文件访问模式
 利用nps提供一个公网可访问的本地文件服务，此模式仅客户端使用配置文件模式方可启动
 

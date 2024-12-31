@@ -12,8 +12,6 @@ import (
 
 	"ehang.io/nps/client"
 	"ehang.io/nps/lib/common"
-	"ehang.io/nps/lib/config"
-	"ehang.io/nps/lib/file"
 	"ehang.io/nps/lib/install"
 	"ehang.io/nps/lib/version"
 	"github.com/astaxie/beego/logs"
@@ -31,10 +29,6 @@ var (
 	proxyUrl       = flag.String("proxy", "", "Proxy socks5 URL (eg: socks5://user:pass@127.0.0.1:9007)")
 	logLevel       = flag.String("log_level", "7", "Log level 0~7")
 	registerTime   = flag.Int("time", 2, "Register time in hours")
-	localPort      = flag.Int("local_port", 2000, "P2P local port")
-	password       = flag.String("password", "", "P2P password flag")
-	target         = flag.String("target", "", "P2P target")
-	localType      = flag.String("local_type", "p2p", "P2P target type")
 	logPath        = flag.String("log_path", "", "NPC log path (empty to use default, 'off' to disable)")
 	logMaxSize     = flag.Int("log_max_size", 5, "Maximum log file size in MB before rotation (0 to disable)")
 	logMaxDays     = flag.String("log_max_days", "7", "Number of days to retain old log files (0 to disable)")
@@ -209,7 +203,7 @@ func configureLogging() {
 	// 设置文件日志，按大小、天数和文件数量滚动
 	if strings.EqualFold(*logType, "file") || strings.EqualFold(*logType, "both") {
 		logs.SetLogger(logs.AdapterFile, `{"level":`+*logLevel+`,"filename":"`+*logPath+`","daily":`+*logDaily+`,"maxfiles":`+*logMaxFiles+`,"maxdays":`+*logMaxDays+`,"maxsize":`+fmt.Sprintf("%d", *logMaxSize*1024*1024)+`,"maxlines":100000,"rotate":true,"color":true}`)
-        }
+	}
 }
 
 type npc struct {
@@ -249,22 +243,6 @@ func (p *npc) run() error {
 // 主运行逻辑
 func run() {
 	common.InitPProfFromArg(*pprofAddr)
-	//p2p or secret command
-	if *password != "" {
-		commonConfig := new(config.CommonConfig)
-		commonConfig.Server = *serverAddr
-		commonConfig.VKey = *verifyKey
-		commonConfig.Tp = *connType
-		localServer := new(config.LocalServer)
-		localServer.Type = *localType
-		localServer.Password = *password
-		localServer.Target = *target
-		localServer.Port = *localPort
-		commonConfig.Client = new(file.Client)
-		commonConfig.Client.Cnf = new(file.Config)
-		go client.StartLocalServer(localServer, commonConfig)
-		return
-	}
 	env := common.GetEnvMap()
 	if *serverAddr == "" {
 		*serverAddr, _ = env["NPC_SERVER_ADDR"]

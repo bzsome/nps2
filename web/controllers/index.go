@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"strings"
 	"ehang.io/nps/lib/file"
 	"ehang.io/nps/server"
 	"ehang.io/nps/server/tool"
+	"strings"
 
 	"github.com/astaxie/beego"
 )
@@ -52,18 +52,6 @@ func (s *IndexController) File() {
 	s.SetType("file")
 	s.display("index/list")
 }
-
-func (s *IndexController) Secret() {
-	s.SetInfo("secret")
-	s.SetType("secret")
-	s.display("index/list")
-}
-func (s *IndexController) P2p() {
-	s.SetInfo("p2p")
-	s.SetType("p2p")
-	s.display("index/list")
-}
-
 func (s *IndexController) Host() {
 	s.SetInfo("host")
 	s.SetType("hostServer")
@@ -96,13 +84,13 @@ func (s *IndexController) Add() {
 		id := int(file.GetDb().JsonDb.GetTaskId())
 		clientId := s.GetIntNoErr("client_id")
 		t := &file.Tunnel{
-			Port:      s.GetIntNoErr("port"),
-			ServerIp:  s.getEscapeString("server_ip"),
-			Mode:      s.getEscapeString("type"),
-			Target:    &file.Target{
-				TargetStr: strings.ReplaceAll(s.getEscapeString("target"), "\r\n", "\n"),
+			Port:     s.GetIntNoErr("port"),
+			ServerIp: s.getEscapeString("server_ip"),
+			Mode:     s.getEscapeString("type"),
+			Target: &file.Target{
+				TargetStr:     strings.ReplaceAll(s.getEscapeString("target"), "\r\n", "\n"),
 				ProxyProtocol: s.GetIntNoErr("proxy_protocol"),
-				LocalProxy: (clientId > 0 && s.GetBoolNoErr("local_proxy")) || clientId <= 0,
+				LocalProxy:    (clientId > 0 && s.GetBoolNoErr("local_proxy")) || clientId <= 0,
 			},
 			Id:        id,
 			Status:    true,
@@ -270,12 +258,12 @@ func (s *IndexController) AddHost() {
 		id := int(file.GetDb().JsonDb.GetHostId())
 		clientId := s.GetIntNoErr("client_id")
 		h := &file.Host{
-			Id:           id,
-			Host:         s.getEscapeString("host"),
-			Target:       &file.Target{
-				TargetStr: strings.ReplaceAll(s.getEscapeString("target"), "\r\n", "\n"),
+			Id:   id,
+			Host: s.getEscapeString("host"),
+			Target: &file.Target{
+				TargetStr:     strings.ReplaceAll(s.getEscapeString("target"), "\r\n", "\n"),
 				ProxyProtocol: s.GetIntNoErr("proxy_protocol"),
-				LocalProxy: (clientId > 0 && s.GetBoolNoErr("local_proxy")) || clientId <= 0,
+				LocalProxy:    (clientId > 0 && s.GetBoolNoErr("local_proxy")) || clientId <= 0,
 			},
 			HeaderChange: s.getEscapeString("header"),
 			HostChange:   s.getEscapeString("hostchange"),

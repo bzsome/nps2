@@ -14,8 +14,6 @@
                                 <span id="caseudp" langtag="info-caseudp"></span>
                                 <span id="casehttpProxy" langtag="info-casehttpproxy"></span>
                                 <span id="casesocks5" langtag="info-casesocks5"></span>
-                                <span id="casesecret" langtag="info-casesecret"></span>
-                                <span id="casep2p" langtag="info-casep2p"></span>
                                 <span id="casefile" langtag="info-casefile"></span>
                             </span>
                             <select class="form-control" name="type" id="type">
@@ -23,8 +21,6 @@
                                 <option value="udp" langtag="scheme-udp"></option>
                                 <option value="httpProxy" langtag="scheme-httpProxy"></option>
                                 <option value="socks5" langtag="scheme-socks5"></option>
-                                <option value="secret" langtag="scheme-secret"></option>
-                                <option value="p2p" langtag="scheme-p2p"></option>
                             {{/*<option value="file" langtag="scheme-file"></option>*/}}
                             </select>
                         </div>
@@ -132,7 +128,6 @@
     arr["socks5"] = ["client_id", "port"]
     arr["httpProxy"] = ["client_id", "port"]
     arr["secret"] = ["client_id", "target", "password"]
-    arr["p2p"] = ["client_id", "target", "password"]
     arr["file"] = ["client_id", "port", "local_path", "strip_pre"]
 
     function resetForm() {

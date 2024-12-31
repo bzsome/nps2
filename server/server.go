@@ -69,19 +69,6 @@ func DealBridgeTask() {
 			}
 		case tunnel := <-Bridge.OpenTask:
 			StartTask(tunnel.Id)
-		case s := <-Bridge.SecretChan:
-			logs.Trace("New secret connection, addr", s.Conn.Conn.RemoteAddr())
-			if t := file.GetDb().GetTaskByMd5Password(s.Password); t != nil {
-				if t.Status {
-					go proxy.NewBaseServer(Bridge, t).DealClient(s.Conn, t.Client, t.Target.TargetStr, nil, common.CONN_TCP, nil, t.Flow, t.Target.ProxyProtocol, t.Target.LocalProxy, nil)
-				} else {
-					s.Conn.Close()
-					logs.Trace("This key %s cannot be processed,status is close", s.Password)
-				}
-			} else {
-				logs.Trace("This key %s cannot be processed", s.Password)
-				s.Conn.Close()
-			}
 		}
 	}
 }
@@ -95,11 +82,6 @@ func StartNewServer(bridgePort int, cnf *file.Tunnel, bridgeType string, bridgeD
 			os.Exit(0)
 		}
 	}()
-	if p, err := beego.AppConfig.Int("p2p_port"); err == nil {
-		go proxy.NewP2PServer(p).Start()
-		go proxy.NewP2PServer(p + 1).Start()
-		go proxy.NewP2PServer(p + 2).Start()
-	}
 	go DealBridgeTask()
 	go dealClientFlow()
 	if svr := NewMode(Bridge, cnf); svr != nil {
@@ -187,12 +169,6 @@ func StopServer(id int) error {
 
 // add task
 func AddTask(t *file.Tunnel) error {
-	if t.Mode == "secret" || t.Mode == "p2p" {
-		logs.Info("secret task %s start ", t.Remark)
-		//RunList[t.Id] = nil
-		RunList.Store(t.Id, nil)
-		return nil
-	}
 	if b := tool.TestServerPort(t.Port, t.Mode); !b && t.Mode != "httpHostServer" {
 		logs.Error("taskId %d start error port %d open failed", t.Id, t.Port)
 		return errors.New("the port open error")
@@ -448,7 +424,7 @@ func GetDashboardData() map[string]interface{} {
 	data["clientOnlineCount"] = c
 	data["inletFlowCount"] = int(in)
 	data["exportFlowCount"] = int(out)
-	var tcp, udp, secret, socks5, p2p, http int
+	var tcp, udp, socks5, http int
 	file.GetDb().JsonDb.Tasks.Range(func(key, value interface{}) bool {
 		switch value.(*file.Tunnel).Mode {
 		case "tcp":
@@ -459,10 +435,6 @@ func GetDashboardData() map[string]interface{} {
 			http += 1
 		case "udp":
 			udp += 1
-		case "p2p":
-			p2p += 1
-		case "secret":
-			secret += 1
 		}
 		return true
 	})
@@ -471,15 +443,11 @@ func GetDashboardData() map[string]interface{} {
 	data["udpCount"] = udp
 	data["socks5Count"] = socks5
 	data["httpProxyCount"] = http
-	data["secretCount"] = secret
-	data["p2pCount"] = p2p
 	data["bridgeType"] = beego.AppConfig.String("bridge_type")
 	data["httpProxyPort"] = beego.AppConfig.String("http_proxy_port")
 	data["httpsProxyPort"] = beego.AppConfig.String("https_proxy_port")
 	data["ipLimit"] = beego.AppConfig.String("ip_limit")
 	data["flowStoreInterval"] = beego.AppConfig.String("flow_store_interval")
-	data["serverIp"] = beego.AppConfig.String("p2p_ip")
-	data["p2pPort"] = beego.AppConfig.String("p2p_port")
 	data["logLevel"] = beego.AppConfig.String("log_level")
 	tcpCount := 0
 
@@ -524,12 +492,12 @@ func GetDashboardData() map[string]interface{} {
 
 // 获取服务端版本号
 func GetVersion() string {
-    return version.VERSION
+	return version.VERSION
 }
 
 // 获取年份
 func GetCurrentYear() int {
-    return time.Now().Year()
+	return time.Now().Year()
 }
 
 // 实例化流量数据到文件

@@ -43,14 +43,6 @@
 		<zh-CN>SOCKS 代理</zh-CN>
 		<en-US>SOCKS 5</en-US>
 	</lang>
-	<lang id="scheme-secret">
-		<zh-CN>私密代理</zh-CN>
-		<en-US>Secret</en-US>
-	</lang>
-	<lang id="scheme-p2p">
-		<zh-CN>P2P 连接</zh-CN>
-		<en-US>P2P</en-US>
-	</lang>
 	<lang id="scheme-file">
 		<zh-CN>文件访问</zh-CN>
 		<en-US>File server</en-US>
@@ -99,14 +91,6 @@
 	<lang id="page-listsocks5">
 		<zh-CN>SOCKS 代理列表</zh-CN>
 		<en-US>SOCKS 5 list</en-US>
-	</lang>
-	<lang id="page-listsecret">
-		<zh-CN>私密代理列表</zh-CN>
-		<en-US>Secret list</en-US>
-	</lang>
-	<lang id="page-listp2p">
-		<zh-CN>P2P 连接列表</zh-CN>
-		<en-US>P2P list</en-US>
 	</lang>
 	<lang id="page-listfileserver">
 		<zh-CN>文件代理列表</zh-CN>
@@ -179,18 +163,6 @@
 	<lang id="word-close">
 		<zh-CN>关闭</zh-CN>
 		<en-US>Close</en-US>
-	</lang>
-	<lang id="word-commandaccessp2ps">
-		<zh-CN>访问端命令 (SOCKS 5)</zh-CN>
-		<en-US>Access command (SOCKS 5)</en-US>
-	</lang>
-	<lang id="word-commandaccessp2pt">
-		<zh-CN>访问端命令 (透明代理)</zh-CN>
-		<en-US>Access command (Transparent proxy)</en-US>
-	</lang>
-	<lang id="word-commandaccessp2p">
-		<zh-CN>访问端命令 (TCP)</zh-CN>
-		<en-US>Access command (TCP)</en-US>
 	</lang>
 	<lang id="word-commandaccess">
 		<zh-CN>访问端命令</zh-CN>
@@ -385,10 +357,6 @@
 	<lang id="word-outbandwidth">
 		<zh-CN>流出带宽</zh-CN>
 		<en-US>Out</en-US>
-	</lang>
-	<lang id="word-p2pport">
-		<zh-CN>P2P 端口</zh-CN>
-		<en-US>P2P port</en-US>
 	</lang>
 	<lang id="word-password">
 		<zh-CN>密码</zh-CN>
@@ -613,10 +581,6 @@
 		<zh-CN>将公网服务器1.1.1.1的8004端口作为HTTP代理，访问内网网站。</zh-CN>
 		<en-US>Use port 8004 of public server 1.1.1.1 as HTTP proxy to visit intranet site.</en-US>
 	</lang>
-	<lang id="info-casep2p">
-		<zh-CN>流量不经过公网服务器，受nat类型影响较大，不能保证100%成功，支持大部分nat类型。</zh-CN>
-		<en-US>The traffic does not pass through the public network server, which is greatly affected by the NAT type, and cannot guarantee 100% success. Most NAT types are supported. A client is also required to provide a port for access to the access side.</en-US>
-	</lang>
 	<lang id="info-casesecret">
 		<zh-CN>无需新增端口,实现访问内网服务器10.1.50.2的22端口,可防止其他人连接。还需要一个客户端作为访问端提供一个端口进行访问。</zh-CN>
 		<en-US>There is no need to add a new port to access port 22 of intranet server 10.1.50.2, which can prevent other people from connecting. A client is also required to provide a port for access to the access side.</en-US>
@@ -645,13 +609,9 @@
 		<zh-CN>冒号分割，多个头部请填写多行</zh-CN>
 		<en-US>Colon separated, multiple lines please fill in</en-US>
 	</lang>
-	<lang id="info-identificationkey">
-		<zh-CN>P2P连接和私密代理模式需要</zh-CN>
-		<en-US>When P2P or Secret</en-US>
-	</lang>
 	<lang id="info-feature1">
-		<zh-CN>协议支持全面，兼容几乎所有常用协议，例如tcp、udp、http(s)、socks5、p2p、http代理...</zh-CN>
-		<en-US>Comprehensive protocol support, compatible with almost all commonly used protocols, such as tcp, udp, http(s), socks5, p2p, http proxy ...</en-US>
+		<zh-CN>协议支持全面，兼容几乎所有常用协议，例如tcp、udp、http(s)、socks5、http代理...</zh-CN>
+		<en-US>Comprehensive protocol support, compatible with almost all commonly used protocols, such as tcp, udp, http(s), socks5, http proxy ...</en-US>
 	</lang>
 	<lang id="info-feature2">
 		<zh-CN>全平台兼容(linux、windows、macos、群辉等)，支持一键安装为系统服务</zh-CN>
@@ -1002,14 +962,6 @@
 						<zh-CN>SOCKS 代理</zh-CN>
 						<en-US>SOCKS 5</en-US>
 					</array>
-					<array id="5">
-						<zh-CN>私密代理</zh-CN>
-						<en-US>Secret</en-US>
-					</array>
-					<array id="6">
-						<zh-CN>P2P 连接</zh-CN>
-						<en-US>P2P</en-US>
-					</array>
 				</data>
 			</legend>
 			<series>
@@ -1047,18 +999,6 @@
 							<name>
 								<zh-CN>SOCKS 代理</zh-CN>
 								<en-US>SOCKS 5</en-US>
-							</name>
-						</array>
-						<array id="5">
-							<name>
-								<zh-CN>私密代理</zh-CN>
-								<en-US>Secret</en-US>
-							</name>
-						</array>
-						<array id="6">
-							<name>
-								<zh-CN>P2P 连接</zh-CN>
-								<en-US>P2P</en-US>
 							</name>
 						</array>
 					</data>

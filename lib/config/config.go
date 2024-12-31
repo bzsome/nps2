@@ -62,20 +62,6 @@ func NewConfig(path string) (c *Config, err error) {
 				nextIndex = len(c.content)
 			}
 			nowContent = c.content[nowIndex:nextIndex]
-
-			if strings.Index(getTitleContent(c.title[i]), "secret") == 0 && !strings.Contains(nowContent, "mode") {
-				local := delLocalService(nowContent)
-				local.Type = "secret"
-				c.LocalServer = append(c.LocalServer, local)
-				continue
-			}
-			//except mode
-			if strings.Index(getTitleContent(c.title[i]), "p2p") == 0 && !strings.Contains(nowContent, "mode") {
-				local := delLocalService(nowContent)
-				local.Type = "p2p"
-				c.LocalServer = append(c.LocalServer, local)
-				continue
-			}
 			//health set
 			if strings.Index(getTitleContent(c.title[i]), "health") == 0 {
 				c.Healths = append(c.Healths, dealHealth(nowContent))

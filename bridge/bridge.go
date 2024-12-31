@@ -21,7 +21,6 @@ import (
 	"ehang.io/nps/lib/file"
 	"ehang.io/nps/lib/version"
 	"ehang.io/nps/server/connection"
-	"ehang.io/nps/server/tool"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 )
@@ -53,7 +52,6 @@ type Bridge struct {
 	OpenTask       chan *file.Tunnel
 	CloseTask      chan *file.Tunnel
 	CloseClient    chan int
-	SecretChan     chan *conn.Secret
 	ipVerify       bool
 	runList        *sync.Map //map[int]interface{}
 	disconnectTime int
@@ -66,7 +64,6 @@ func NewTunnel(tunnelPort int, tunnelType string, ipVerify bool, runList *sync.M
 		OpenTask:       make(chan *file.Tunnel, 100),
 		CloseTask:      make(chan *file.Tunnel, 100),
 		CloseClient:    make(chan int, 100),
-		SecretChan:     make(chan *conn.Secret, 100),
 		ipVerify:       ipVerify,
 		runList:        runList,
 		disconnectTime: disconnectTime,
@@ -315,13 +312,6 @@ func (s *Bridge) typeDeal(typeVal string, c *conn.Conn, id int, vs string) {
 	case common.WORK_REGISTER:
 		go s.register(c)
 
-	case common.WORK_SECRET:
-		if b, err := c.GetShortContent(32); err == nil {
-			s.SecretChan <- conn.NewSecret(string(b), c)
-		} else {
-			logs.Error("secret error, failed to match the key successfully")
-		}
-
 	case common.WORK_FILE:
 		muxConn := nps_mux.NewMux(c.Conn, s.tunnelType, s.disconnectTime)
 		if v, loaded := s.Client.LoadOrStore(id, NewClient(nil, muxConn, nil, vs)); loaded {
@@ -329,29 +319,6 @@ func (s *Bridge) typeDeal(typeVal string, c *conn.Conn, id int, vs string) {
 			client.file = muxConn
 		}
 
-	case common.WORK_P2P:
-		// read md5 secret
-		if b, err := c.GetShortContent(32); err != nil {
-			logs.Error("p2p error,", err.Error())
-		} else if t := file.GetDb().GetTaskByMd5Password(string(b)); t == nil {
-			logs.Error("p2p error, failed to match the key successfully")
-		} else if v, ok := s.Client.Load(t.Client.Id); ok {
-			//向密钥对应的客户端发送与服务端udp建立连接信息，地址，密钥
-			svrAddr := beego.AppConfig.String("p2p_ip") + ":" + beego.AppConfig.String("p2p_port")
-			if err != nil {
-				logs.Warn("get local udp addr error")
-				return
-			}
-			client := v.(*Client)
-			client.signal.Write([]byte(common.NEW_UDP_CONN))
-			client.signal.WriteLenContent([]byte(svrAddr))
-			client.signal.WriteLenContent(b)
-			//向该请求者发送建立连接请求,服务器地址
-			c.WriteLenContent([]byte(svrAddr))
-
-		} else {
-			return
-		}
 	}
 
 	c.SetAlive(s.tunnelType) // 设置连接为活动状态，避免超时断开
@@ -441,12 +408,12 @@ func (s *Bridge) ping() {
 			s.Client.Range(func(key, value interface{}) bool {
 				clientID := key.(int)
 				client := value.(*Client)
-				
+
 				// 跳过虚拟客户端的健康检查
 				if clientID <= 0 {
 					return true
 				}
-				
+
 				// 处理正常客户端
 				if client == nil || client.tunnel == nil || client.signal == nil || client.tunnel.IsClose {
 					client.retryTime++
@@ -565,8 +532,6 @@ loop:
 				fail = true
 				c.WriteAddFail()
 				break loop
-			} else if t.Mode == "secret" || t.Mode == "p2p" {
-				ports = append(ports, 0)
 			}
 
 			if len(ports) == 0 {
@@ -577,18 +542,18 @@ loop:
 
 			for i := 0; i < len(ports); i++ {
 				tl := &file.Tunnel{
-					Mode:        t.Mode,
-					Port:        ports[i],
-					ServerIp:    t.ServerIp,
-					Client:      client,
-					Password:    t.Password,
-					LocalPath:   t.LocalPath,
-					StripPre:    t.StripPre,
+					Mode:         t.Mode,
+					Port:         ports[i],
+					ServerIp:     t.ServerIp,
+					Client:       client,
+					Password:     t.Password,
+					LocalPath:    t.LocalPath,
+					StripPre:     t.StripPre,
 					MultiAccount: t.MultiAccount,
-					Id:          int(file.GetDb().JsonDb.GetTaskId()),
-					Status:      true,
-					Flow:        new(file.Flow),
-					NoStore:     true,
+					Id:           int(file.GetDb().JsonDb.GetTaskId()),
+					Status:       true,
+					Flow:         new(file.Flow),
+					NoStore:      true,
 				}
 
 				if len(ports) == 1 {
@@ -614,13 +579,6 @@ loop:
 						c.WriteAddFail()
 						break loop
 					}
-
-					if b := tool.TestServerPort(tl.Port, tl.Mode); !b && t.Mode != "secret" && t.Mode != "p2p" {
-						fail = true
-						c.WriteAddFail()
-						break loop
-					}
-
 					s.OpenTask <- tl
 				}
 				c.WriteAddOk()

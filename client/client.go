@@ -6,18 +6,14 @@ import (
 	"ehang.io/nps/lib/nps_mux"
 	"net"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/astaxie/beego/logs"
-	"github.com/xtaci/kcp-go"
-
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/config"
 	"ehang.io/nps/lib/conn"
-	"ehang.io/nps/lib/crypt"
+	"github.com/astaxie/beego/logs"
 )
 
 type TRPClient struct {
@@ -25,7 +21,6 @@ type TRPClient struct {
 	bridgeConnType string
 	proxyUrl       string
 	vKey           string
-	p2pAddr        map[string]string
 	tunnel         *nps_mux.Mux
 	signal         *conn.Conn
 	ticker         *time.Ticker
@@ -34,11 +29,10 @@ type TRPClient struct {
 	once           sync.Once
 }
 
-//new client
+// new client
 func NewRPClient(svraddr string, vKey string, bridgeConnType string, proxyUrl string, cnf *config.Config, disconnectTime int) *TRPClient {
 	return &TRPClient{
 		svrAddr:        svraddr,
-		p2pAddr:        make(map[string]string, 0),
 		vKey:           vKey,
 		bridgeConnType: bridgeConnType,
 		proxyUrl:       proxyUrl,
@@ -51,7 +45,7 @@ func NewRPClient(svraddr string, vKey string, bridgeConnType string, proxyUrl st
 var NowStatus int
 var CloseClient bool
 
-//start
+// start
 func (s *TRPClient) Start() {
 	CloseClient = false
 retry:
@@ -85,7 +79,7 @@ retry:
 	s.handleMain()
 }
 
-//handle main connection
+// handle main connection
 func (s *TRPClient) handleMain() {
 	for {
 		flags, err := s.signal.ReadFlag()
@@ -94,65 +88,12 @@ func (s *TRPClient) handleMain() {
 			break
 		}
 		switch flags {
-		case common.NEW_UDP_CONN:
-			//read server udp addr and password
-			if lAddr, err := s.signal.GetShortLenContent(); err != nil {
-				logs.Warn(err)
-				return
-			} else if pwd, err := s.signal.GetShortLenContent(); err == nil {
-				var localAddr string
-				//The local port remains unchanged for a certain period of time
-				if v, ok := s.p2pAddr[crypt.Md5(string(pwd)+strconv.Itoa(int(time.Now().Unix()/100)))]; !ok {
-					tmpConn, err := common.GetLocalUdpAddr()
-					if err != nil {
-						logs.Error(err)
-						return
-					}
-					localAddr = tmpConn.LocalAddr().String()
-				} else {
-					localAddr = v
-				}
-				go s.newUdpConn(localAddr, string(lAddr), string(pwd))
-			}
 		}
 	}
 	s.Close()
 }
 
-func (s *TRPClient) newUdpConn(localAddr, rAddr string, md5Password string) {
-	var localConn net.PacketConn
-	var err error
-	var remoteAddress string
-	if remoteAddress, localConn, err = handleP2PUdp(localAddr, rAddr, md5Password, common.WORK_P2P_PROVIDER); err != nil {
-		logs.Error(err)
-		return
-	}
-	l, err := kcp.ServeConn(nil, 150, 3, localConn)
-	if err != nil {
-		logs.Error(err)
-		return
-	}
-	logs.Trace("start local p2p udp listen, local address", localConn.LocalAddr().String())
-	for {
-		udpTunnel, err := l.AcceptKCP()
-		if err != nil {
-			logs.Error(err)
-			l.Close()
-			return
-		}
-		if udpTunnel.RemoteAddr().String() == string(remoteAddress) {
-			conn.SetUdpSession(udpTunnel)
-			logs.Trace("successful connection with client ,address %s", udpTunnel.RemoteAddr().String())
-			//read link info from remote
-			conn.Accept(nps_mux.NewMux(udpTunnel, s.bridgeConnType, s.disconnectTime), func(c net.Conn) {
-				go s.handleChan(c)
-			})
-			break
-		}
-	}
-}
-
-//pmux tunnel
+// pmux tunnel
 func (s *TRPClient) newChan() {
 	tunnel, err := NewConn(s.bridgeConnType, s.vKey, s.svrAddr, common.WORK_CHAN, s.proxyUrl)
 	if err != nil {

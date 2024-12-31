@@ -22,8 +22,3 @@ install 之后，Linux 配置文件在 /etc/nps
 当使用docker部署，但不使用`--net=host`网络模式时，隧道端口应该由nps服务暴露，而非npc
 nps服务才是代理服务，所以在暴露隧道端口时，虽说是npc隧道建立时配置的代理端口，却只能由nps暴露出去，因为npc为隧道客户端，而非代理服务。
 ```
-
-- p2p穿透失败 [p2p服务](https://ehang-io.github.io/nps/#/example?id=p2p%e6%9c%8d%e5%8a%a1)
-```
-双方nat类型都是Symmetric Nat一定不成功，建议先查看nat类型。请按照文档操作(标题上有超链接)
-```
