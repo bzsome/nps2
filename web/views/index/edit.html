@@ -12,14 +12,12 @@
                             <span id="usecase">
                                 <span id="casetcp" langtag="info-casetcp"></span>
                                 <span id="caseudp" langtag="info-caseudp"></span>
-                                <span id="casehttpProxy" langtag="info-casehttpproxy"></span>
                                 <span id="casesocks5" langtag="info-casesocks5"></span>
                                 <span id="casefile" langtag="info-casefile"></span>
                             </span>
                             <select class="form-control" name="type" id="type">
                                 <option value="tcp" langtag="scheme-tcp"></option>
                                 <option value="udp" langtag="scheme-udp"></option>
-                                <option value="httpProxy" langtag="scheme-httpProxy"></option>
                                 <option value="socks5" langtag="scheme-socks5"></option>
                             {{/*<option value="file" langtag="scheme-file"></option>*/}}
                             </select>
@@ -126,7 +124,6 @@
     arr["tcp"] = ["client_id", "port", "target", "proxy_protocol", "local_proxy"]
     arr["udp"] = ["client_id", "port", "target", "local_proxy"]
     arr["socks5"] = ["client_id", "port"]
-    arr["httpProxy"] = ["client_id", "port"]
     arr["secret"] = ["client_id", "target", "password"]
     arr["file"] = ["client_id", "port", "local_path", "strip_pre"]
 

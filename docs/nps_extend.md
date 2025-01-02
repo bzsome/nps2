@@ -12,37 +12,6 @@
 
 在`nps.conf`中将`https_just_proxy`设置为true，并且打开`https_proxy_port`端口，然后nps将直接转发https请求到内网服务器上，由内网服务器进行https处理
 
-## 与nginx配合
-
-有时候我们还需要在云服务器上运行nginx来保证静态文件缓存等，本代理可和nginx配合使用，在配置文件中将httpProxyPort设置为非80端口，并在nginx中配置代理，例如httpProxyPort为8010时
-```
-server {
-    listen 80;
-    server_name *.proxy.com;
-    location / {
-        proxy_set_header Host  $http_host;
-        proxy_pass http://127.0.0.1:8010;
-    }
-}
-```
-如需使用https也可在nginx监听443端口并配置ssl，并将本代理的httpsProxyPort设置为空关闭https即可，例如httpProxyPort为8020时
-
-```
-server {
-    listen 443;
-    server_name *.proxy.com;
-    ssl on;
-    ssl_certificate  certificate.crt;
-    ssl_certificate_key private.key;
-    ssl_session_timeout 5m;
-    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_prefer_server_ciphers on;
-    location / {
-        proxy_set_header Host  $http_host;
-        proxy_pass http://127.0.0.1:8020;
-    }
-}
 ```
 ## web管理使用https
 如果web管理需要使用https，可以在配置文件`nps.conf`中设置`web_open_ssl=true`，并配置`web_cert_file`和`web_key_file`

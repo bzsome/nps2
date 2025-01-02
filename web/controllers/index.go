@@ -42,11 +42,6 @@ func (s *IndexController) Socks5() {
 	s.display("index/list")
 }
 
-func (s *IndexController) Http() {
-	s.SetInfo("http proxy")
-	s.SetType("httpProxy")
-	s.display("index/list")
-}
 func (s *IndexController) File() {
 	s.SetInfo("file server")
 	s.SetType("file")

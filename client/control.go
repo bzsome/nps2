@@ -1,7 +1,6 @@
 package client
 
 import (
-	"bufio"
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/binary"
@@ -10,7 +9,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
-	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -191,8 +189,6 @@ func NewConn(tp string, vkey string, server string, connType string, proxyUrl st
 					return nil, er
 				}
 				connection, err = n.Dial("tcp", server)
-			default:
-				connection, err = NewHttpProxyConn(u, server)
 			}
 		} else {
 			if GetTlsEnable() {
@@ -271,33 +267,6 @@ func NewConn(tp string, vkey string, server string, connType string, proxyUrl st
 	c.SetAlive(tp)
 
 	return c, nil
-}
-
-// http proxy connection
-func NewHttpProxyConn(url *url.URL, remoteAddr string) (net.Conn, error) {
-	req, err := http.NewRequest("CONNECT", "http://"+remoteAddr, nil)
-	if err != nil {
-		return nil, err
-	}
-	password, _ := url.User.Password()
-	req.Header.Set("Authorization", "Basic "+basicAuth(strings.Trim(url.User.Username(), " "), password))
-	// we make a http proxy request
-	proxyConn, err := net.Dial("tcp", url.Host)
-	if err != nil {
-		return nil, err
-	}
-	if err := req.Write(proxyConn); err != nil {
-		return nil, err
-	}
-	res, err := http.ReadResponse(bufio.NewReader(proxyConn), req)
-	if err != nil {
-		return nil, err
-	}
-	_ = res.Body.Close()
-	if res.StatusCode != 200 {
-		return nil, errors.New("Proxy error " + res.Status)
-	}
-	return proxyConn, nil
 }
 
 // get a basic auth string

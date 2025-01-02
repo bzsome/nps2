@@ -114,8 +114,6 @@ func NewMode(Bridge *bridge.Bridge, c *file.Tunnel) proxy.Service {
 		service = proxy.NewTunnelModeServer(proxy.ProcessTunnel, Bridge, c)
 	case "socks5":
 		service = proxy.NewSock5ModeServer(Bridge, c)
-	case "httpProxy":
-		service = proxy.NewTunnelModeServer(proxy.ProcessHttp, Bridge, c)
 	case "tcpTrans":
 		service = proxy.NewTunnelModeServer(proxy.HandleTrans, Bridge, c)
 	case "udp":
@@ -401,15 +399,13 @@ func GetDashboardData() map[string]interface{} {
 	data["clientOnlineCount"] = c
 	data["inletFlowCount"] = int(in)
 	data["exportFlowCount"] = int(out)
-	var tcp, udp, socks5, http int
+	var tcp, udp, socks5 int
 	file.GetDb().JsonDb.Tasks.Range(func(key, value interface{}) bool {
 		switch value.(*file.Tunnel).Mode {
 		case "tcp":
 			tcp += 1
 		case "socks5":
 			socks5 += 1
-		case "httpProxy":
-			http += 1
 		case "udp":
 			udp += 1
 		}
@@ -419,7 +415,6 @@ func GetDashboardData() map[string]interface{} {
 	data["tcpC"] = tcp
 	data["udpCount"] = udp
 	data["socks5Count"] = socks5
-	data["httpProxyCount"] = http
 	data["bridgeType"] = beego.AppConfig.String("bridge_type")
 	data["ipLimit"] = beego.AppConfig.String("ip_limit")
 	data["flowStoreInterval"] = beego.AppConfig.String("flow_store_interval")

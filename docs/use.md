@@ -130,21 +130,6 @@ server_port=9002
 mode | udp
 server_port | 在服务端的代理端口
 target_addr|内网目标
-#### http代理模式
-
-```ini
-[common]
-server_addr=1.1.1.1:8024
-vkey=123
-[http]
-mode=httpProxy
-server_port=9003
-```
-项 | 含义
----|---
-mode | httpProxy
-server_port | 在服务端的代理端口
-
 #### socks5代理模式
 
 ```ini

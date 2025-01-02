@@ -30,10 +30,6 @@
 		<zh-CN>UDP 隧道</zh-CN>
 		<en-US>UDP</en-US>
 	</lang>
-	<lang id="scheme-httpproxy">
-		<zh-CN>HTTP 代理</zh-CN>
-		<en-US>HTTP proxy</en-US>
-	</lang>
 	<lang id="scheme-socks5">
 		<zh-CN>SOCKS 代理</zh-CN>
 		<en-US>SOCKS 5</en-US>
@@ -66,10 +62,6 @@
 	<lang id="page-listudp">
 		<zh-CN>UDP 隧道列表</zh-CN>
 		<en-US>UDP list</en-US>
-	</lang>
-	<lang id="page-listhttpproxy">
-		<zh-CN>HTTP 代理列表</zh-CN>
-		<en-US>HTTP proxy list</en-US>
 	</lang>
 	<lang id="page-listsocks5">
 		<zh-CN>SOCKS 代理列表</zh-CN>
@@ -547,10 +539,6 @@
 	<lang id="info-casefile">
 		<zh-CN>通提供一个公网可访问的本地文件服务，此模式仅客户端使用配置文件模式方可启动。</zh-CN>
 		<en-US>Provide a local file service accessible to the public network, which can only be started by the client using the profile mode.</en-US>
-	</lang>
-	<lang id="info-casehttpproxy">
-		<zh-CN>将公网服务器1.1.1.1的8004端口作为HTTP代理，访问内网网站。</zh-CN>
-		<en-US>Use port 8004 of public server 1.1.1.1 as HTTP proxy to visit intranet site.</en-US>
 	</lang>
 	<lang id="info-casesecret">
 		<zh-CN>无需新增端口,实现访问内网服务器10.1.50.2的22端口,可防止其他人连接。还需要一个客户端作为访问端提供一个端口进行访问。</zh-CN>
