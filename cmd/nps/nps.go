@@ -11,7 +11,6 @@ import (
 	"strings"
 	"sync"
 
-	"ehang.io/nps/bridge"
 	"ehang.io/nps/lib/daemon"
 
 	"ehang.io/nps/lib/file"
@@ -23,7 +22,6 @@ import (
 	"ehang.io/nps/web/routers"
 
 	"ehang.io/nps/lib/common"
-	"ehang.io/nps/lib/crypt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 
@@ -98,9 +96,6 @@ func main() {
 		Description: "一款轻量级、功能强大的内网穿透代理服务器。支持tcp、udp流量转发，支持内网http代理、内网socks5代理，同时支持snappy压缩、站点保护、加密传输、多路复用、header修改等。支持web图形化管理，集成多用户模式。",
 		Option:      options,
 	}
-
-	bridge.ServerTlsEnable = beego.AppConfig.DefaultBool("tls_enable", false)
-
 	for _, v := range os.Args[1:] {
 		switch v {
 		case "install", "start", "stop", "uninstall", "restart":
@@ -250,10 +245,9 @@ func run() {
 	}
 
 	logs.Info("the config path is:" + common.GetRunPath())
-	logs.Info("the version of server is %s ,allow client core version to be %s,tls enable is %t", version.VERSION, version.GetVersion(), bridge.ServerTlsEnable)
+	logs.Info("the version of server is %s ,allow client core version to be %s", version.VERSION, version.GetVersion())
 	connection.InitConnectionService()
-	//crypt.InitTls(filepath.Join(common.GetRunPath(), "conf", "server.pem"), filepath.Join(common.GetRunPath(), "conf", "server.key"))
-	crypt.InitTls()
+
 	tool.InitAllowPort()
 	tool.StartSystemInfo()
 	timeout, err := beego.AppConfig.Int("disconnect_timeout")

@@ -39,7 +39,6 @@ var (
 	stunAddr       = flag.String("stun_addr", "stun.stunprotocol.org:3478", "STUN server address")
 	ver            = flag.Bool("version", false, "Show current version")
 	disconnectTime = flag.Int("disconnect_timeout", 60, "Disconnect timeout in seconds")
-	tlsEnable      = flag.Bool("tls_enable", false, "Enable TLS")
 )
 
 func main() {
@@ -251,8 +250,7 @@ func run() {
 		*verifyKey, _ = env["NPC_SERVER_VKEY"]
 	}
 	if *verifyKey != "" && *serverAddr != "" && *configPath == "" {
-		client.SetTlsEnable(*tlsEnable)
-		logs.Info("the version of client is %s, the core version of client is %s, tls enable is %t", version.VERSION, version.GetVersion(), client.GetTlsEnable())
+		logs.Info("the version of client is %s, the core version of client is %s", version.VERSION, version.GetVersion())
 
 		vkeys := strings.Split(*verifyKey, `,`)
 		for _, key := range vkeys {

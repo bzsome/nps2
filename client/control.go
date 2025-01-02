@@ -1,7 +1,6 @@
 package client
 
 import (
-	"crypto/tls"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -24,16 +23,6 @@ import (
 	"github.com/xtaci/kcp-go"
 	"golang.org/x/net/proxy"
 )
-
-var tlsEnable1 = false
-
-func SetTlsEnable(tlsEnable11 bool) {
-	tlsEnable1 = tlsEnable11
-}
-
-func GetTlsEnable() bool {
-	return tlsEnable1
-}
 
 func GetTaskStatus(path string) {
 	cnf, err := config.NewConfig(path)
@@ -94,9 +83,6 @@ func StartFromFile(path string) {
 		os.Exit(0)
 	}
 	logs.Info("Loading configuration file %s successfully", path)
-
-	SetTlsEnable(cnf.CommonConfig.TlsEnable)
-	logs.Info("the version of client is %s, the core version of client is %s,tls enable is %t", version.VERSION, version.GetVersion(), GetTlsEnable())
 
 	for {
 		if !first && !cnf.CommonConfig.AutoReconnection {
@@ -190,30 +176,7 @@ func NewConn(tp string, vkey string, server string, connType string, proxyUrl st
 				connection, err = n.Dial("tcp", server)
 			}
 		} else {
-			if GetTlsEnable() {
-				//tls 流量加密
-				conf := &tls.Config{InsecureSkipVerify: true}
-				connection, err = tls.DialWithDialer(&dialer, "tcp", server, conf)
-			} else {
-				connection, err = dialer.Dial("tcp", server)
-			}
-
-			//header := &proxyproto.Header{
-			//	Version:           1,
-			//	Command:           proxyproto.PROXY,
-			//	TransportProtocol: proxyproto.TCPv4,
-			//	SourceAddr: &net.TCPAddr{
-			//		IP:   net.ParseIP("10.1.1.1"),
-			//		Port: 1000,
-			//	},
-			//	DestinationAddr: &net.TCPAddr{
-			//		IP:   net.ParseIP("20.2.2.2"),
-			//		Port: 2000,
-			//	},
-			//}
-			//
-			//_, err = header.WriteTo(connection)
-			//_, err = io.WriteString(connection, "HELO")
+			connection, err = dialer.Dial("tcp", server)
 		}
 	} else {
 		sess, err = kcp.DialWithOptions(server, nil, 10, 3)

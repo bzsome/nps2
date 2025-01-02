@@ -52,7 +52,7 @@ nps start
 ```
 # Linux (二进制安装路径：/usr/bin/)
 ./npc install
-/usr/bin/npc install -server=xxx:123 -vkey=xxx -type=tcp -tls_enable=true -log=off
+/usr/bin/npc install -server=xxx:123 -vkey=xxx -type=tcp -log=off
 npc start|stop|restart|uninstall
 # 更新
 npc stop
@@ -62,7 +62,7 @@ npc start
 npc -h
 
 # Windows (二进制路径：当前文件夹)
-.\npc.exe install -server="xxx:123" -vkey="xxx" -type="tcp" -tls_enable="true" -log="off"
+.\npc.exe install -server="xxx:123" -vkey="xxx" -type="tcp" -log="off"
 .\npc.exe start|stop|restart|uninstall
 # 更新
 .\npc.exe stop
@@ -75,7 +75,7 @@ npc -h
 
 Windows （看懂下面命令再操作 [微软SC命令指南](https://learn.microsoft.com/zh-cn/windows-server/administration/windows-commands/sc-create)）
 ```
-cmd /c 'sc create Npc1 binPath= "D:\tools\npc.exe -server=xxx:123 -vkey=xxx -type=tcp -tls_enable=true -log=off -debug=false" DisplayName= "nps内网穿透客户端1" start= auto'
+cmd /c 'sc create Npc1 binPath= "D:\tools\npc.exe -server=xxx:123 -vkey=xxx -type=tcp -log=off -debug=false" DisplayName= "nps内网穿透客户端1" start= auto'
 ```
 
 Linux (根据下面示例编写systemd配置) (/etc/systemd/system/服务名称.service) 
@@ -111,7 +111,7 @@ docker run -d --restart=always --name nps --net=host -v <本机conf目录>:/conf
 
 # NPC
 docker pull duan2001/npc
-docker run -d --restart=always --name npc --net=host duan2001/npc -server=xxxx:123 -vkey=xxxx,xxxx -tls_enable=true -log=off
+docker run -d --restart=always --name npc --net=host duan2001/npc -server=xxxx:123 -vkey=xxxx,xxxx -log=off
 ```
 
 ## 补充说明
@@ -249,23 +249,9 @@ proxy_buffering off;
       否则走端口转发模式（使用本地证书,nps 获取不到真实IP）， 如下图所示。    
     ![image](image/new/https.png)
 
-
-
-- 2024-02-27  v0.26.18  
-  ***新增***：nps.conf 新增 `tls_bridge_port=8025` 参数，当 `tls_enable=true` 时，nps 会监听8025端口，作为 tls 的连接端口。  
-             客户端可以选择连接 tls 端口或者非 tls 端口： `npc.exe  -server=xxx:8024 -vkey=xxx` 或 `npc.exe  -server=xxx:8025 -vkey=xxx -tls_enable=true`
-  
-  
 - 2024-01-31  v0.26.17  
   ***说明***：考虑到 npc 历史版本客户端众多，版本号不同旧版本客户端无法连接，为了兼容，仓库版本号将继续沿用 0.26.xx
 
-
-- 2024-01-02  v0.27.01  (已作废，功能移动到v0.26.17 版本)  
-  ***新增***：tls 流量加密，(客户端忽略证书校验，谨慎使用，客户端与服务端需要同时开启，或同时关闭)，使用方式：   
-             服务端：nps.conf `tls_enable=true`;    
-             客户端：npc.conf `tls_enable=true` 或者 `npc.exe  -server=xxx -vkey=xxx -tls_enable=true`  
-
-  
 - 2023-06-01  v0.26.16  
   ***修复***：https 流量不统计 Bug 修复。  
   ***新增***：新增全局黑名单IP，用于防止被肉鸡扫描端口或被恶意攻击。  

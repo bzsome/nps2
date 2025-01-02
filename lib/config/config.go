@@ -15,7 +15,6 @@ type CommonConfig struct {
 	VKey             string
 	Tp               string //bridgeType kcp or tcp
 	AutoReconnection bool
-	TlsEnable        bool
 	ProxyUrl         string
 	Client           *file.Client
 	DisconnectTime   int
@@ -125,8 +124,6 @@ func dealCommon(s string) *CommonConfig {
 			common.InitPProfFromArg(item[1])
 		case "disconnect_timeout":
 			c.DisconnectTime = common.GetIntNoErrByStr(item[1])
-		case "tls_enable":
-			c.TlsEnable = common.GetBoolByStr(item[1])
 		}
 	}
 	return c

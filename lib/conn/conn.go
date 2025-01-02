@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"ehang.io/nps/lib/common"
-	"ehang.io/nps/lib/crypt"
 	"ehang.io/nps/lib/file"
 	"ehang.io/nps/lib/goroutine"
 	"ehang.io/nps/lib/pmux"
@@ -474,28 +473,9 @@ func BuildProxyProtocolHeader(c net.Conn, proxyProtocol int) []byte {
 	return nil
 }
 
-func BuildProxyProtocolHeaderByAddr(clientAddr, targetAddr *net.TCPAddr, proxyProtocol int) []byte {
-	if proxyProtocol == 0 {
-		return nil
-	}
-
-	if proxyProtocol == 2 {
-		return BuildProxyProtocolV2Header(clientAddr, targetAddr)
-	}
-	if proxyProtocol == 1 {
-		return BuildProxyProtocolV1Header(clientAddr, targetAddr)
-	}
-	return nil
-}
-
 // get crypt or snappy conn
 func GetConn(conn net.Conn, cpt, snappy bool, rt *rate.Rate, isServer bool) io.ReadWriteCloser {
-	if cpt {
-		if isServer {
-			return rate.NewRateConn(crypt.NewTlsServerConn(conn), rt)
-		}
-		return rate.NewRateConn(crypt.NewTlsClientConn(conn), rt)
-	} else if snappy {
+	if snappy {
 		return rate.NewRateConn(NewSnappyConn(conn), rt)
 	}
 	return rate.NewRateConn(conn, rt)

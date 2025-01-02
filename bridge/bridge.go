@@ -1,8 +1,6 @@
 package bridge
 
 import (
-	"crypto/tls"
-	_ "crypto/tls"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -24,8 +22,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 )
-
-var ServerTlsEnable bool = false
 
 type Client struct {
 	tunnel    *nps_mux.Mux // WORK_CHAN connection
@@ -90,30 +86,6 @@ func (s *Bridge) StartTunnel() error {
 				s.cliProcess(conn.NewConn(c))
 			})
 		}()
-
-		// tls
-		if ServerTlsEnable {
-			go func() {
-				// 监听TLS 端口
-				tlsBridgePort := beego.AppConfig.DefaultInt("tls_bridge_port", 8025)
-
-				logs.Info("tls server start, the bridge type is %s, the tls bridge port is %d", "tcp", tlsBridgePort)
-				tlsListener, tlsErr := net.ListenTCP("tcp", &net.TCPAddr{
-					IP:   net.ParseIP(beego.AppConfig.String("bridge_ip")),
-					Port: tlsBridgePort,
-					Zone: "",
-				})
-
-				if tlsErr != nil {
-					logs.Error(tlsErr)
-					os.Exit(0)
-					return
-				}
-				conn.Accept(tlsListener, func(c net.Conn) {
-					s.cliProcess(conn.NewConn(tls.Server(c, &tls.Config{Certificates: []tls.Certificate{crypt.GetCert()}})))
-				})
-			}()
-		}
 	}
 	return nil
 }
