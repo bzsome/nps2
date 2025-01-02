@@ -116,18 +116,12 @@ docker run -d --restart=always --name npc --net=host duan2001/npc -server=xxxx:1
 
 ## 补充说明
 - 关于ipv6问题，不需要修改任何配置，默认配置就已经在双栈协议上监听了
-- 域名转发的HTTPS证书和密钥位置支持填写路径或证书文本内容
   
   其中路径支持绝对路径和相对路径，不过最好填写绝对路径，相对路径是以nps二进制文件所在路径为基准。
   
   此外docker映射的文件夹内文件不支持软链接，有需要请使用硬链接。
 - 客户端命令行方式启动支持多个隧道ID，使用逗号拼接，示例：`npc -server=xxx:8024 -vkey=ytkpyr0er676m0r7,iwnbjfbvygvzyzzt`
 - 当需要在NPS前添加反向代理时可以通过插入头（X-NPS-Http-Only: password）来避免301重定向和插入真实IP
-- 域名转发的模式指的是访问NPS的模式而不是后端服务器模式，正常情况下目标应该填写后端HTTP端口，通过 X-Forwarded-For 或 X-Real-IP 获取真实IP
-
-  如果后端只有HTTPS的话可以通过将模式配置为HTTPS，同时NPS证书位置留空则即可，注意后端证书要配置正确，如果后端支持可以通过Proxy Protocol获取真实IP
-
-  注意域名转发中的Proxy Protocol功能只在仅转发HTTPS情况下生效（NPS证书位置留空通过HTTPS访问，即由后端处理HTTPS）
 - NPS日志配置 nps.conf
 ```
 # 日志级别 (0-7) LevelEmergency->0  LevelAlert->1 LevelCritical->2 LevelError->3 LevelWarning->4 LevelNotice->5 LevelInformational->6 LevelDebug->7
@@ -177,7 +171,6 @@ proxy_buffering off;
 - 2024-12-03 v0.26.32
   - 修复Proxy Protocol在开启客户端加密压缩后不能正常工作问题 [#26](https://github.com/djylb/nps/issues/26)
   - 修复TCP高并发下读写冲突问题
-  - 调整域名转发下Proxy Protocol功能仅在后端处理HTTPS时生效，避免用户错误配置
   - 优化连接超时处理逻辑
 
 - 2024-11-26 v0.26.31
@@ -203,7 +196,6 @@ proxy_buffering off;
 - 2024-11-19 v0.26.27
   - 完善界面翻译和提示内容
   - 修复https just proxy
-  - 域名转发也支持Proxy Protocol
 
      (仅用于代理后端HTTPS时传递真实IP，正常情况下请直接使用 X-Forwarded-For 或 X-Real-IP 获取真实IP)
 
@@ -304,7 +296,6 @@ proxy_buffering off;
 ***修复***：某些场景下丢包导致服务端意外退出  
 ***优化***：新增隧道时，不指定服务端口时，将自动生成端口号  
 ***优化***：API返回ID, `/client/add/, /index/addhost/，/index/add/ `   
-***优化***：域名解析、隧道页面，增加[唯一验证密钥]，方便搜查  
 
 
 - 2022-10-30   

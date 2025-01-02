@@ -2,7 +2,6 @@ package test
 
 import (
 	"log"
-	"path/filepath"
 	"strconv"
 
 	"ehang.io/nps/lib/common"
@@ -37,27 +36,6 @@ func TestServerConfig() {
 			isInArr(&postUdpArr, port, "Server and client communication ports", "udp")
 		} else {
 			isInArr(&postTcpArr, port, "Server and client communication ports", "tcp")
-		}
-	}
-
-	if p := beego.AppConfig.String("httpProxyPort"); p != "" {
-		if port, err := strconv.Atoi(p); err != nil {
-			log.Fatalln("get http port error:", err)
-		} else {
-			isInArr(&postTcpArr, port, "https port", "tcp")
-		}
-	}
-	if p := beego.AppConfig.String("https_proxy_port"); p != "" {
-		if port, err := strconv.Atoi(p); err != nil {
-			log.Fatalln("get https port error", err)
-		} else {
-			if beego.AppConfig.String("pemPath") != "" && !common.FileExists(filepath.Join(common.GetRunPath(), beego.AppConfig.String("pemPath"))) {
-				log.Fatalf("ssl certFile %s is not exist", beego.AppConfig.String("pemPath"))
-			}
-			if beego.AppConfig.String("keyPath") != "" && !common.FileExists(filepath.Join(common.GetRunPath(), beego.AppConfig.String("keyPath"))) {
-				log.Fatalf("ssl keyFile %s is not exist", beego.AppConfig.String("pemPath"))
-			}
-			isInArr(&postTcpArr, port, "http port", "tcp")
 		}
 	}
 }

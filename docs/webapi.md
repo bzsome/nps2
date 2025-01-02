@@ -81,68 +81,6 @@ POST /client/del/
 | id | 要删除的客户端id |
 
 ***
-获取域名解析列表
-
-```
-POST /index/hostlist/
-```
-
-| 参数 | 含义 |
-| --- | --- |
-| search | 搜索(可以搜域名/备注什么的) |
-| offset | 分页(第几页) |
-| limit | 条数(分页显示的条数) |
-
-***
-添加域名解析
-
-```
-POST /index/addhost/
-```
-
-
-| 参数 | 含义 |
-| --- | --- |
-| remark | 备注 |
-| host | 域名 |
-| scheme | 协议类型(三种 all http https) |
-| location | url路由 空则为不限制 |
-| client\_id | 客户端id |
-| target | 内网目标(ip:端口) |
-| header | request header 请求头 |
-| hostchange | request host 请求主机 |
-
-***
-修改域名解析
-
-```
-POST /index/edithost/
-```
-
-| 参数 | 含义 |
-| --- | --- |
-| remark | 备注 |
-| host | 域名 |
-| scheme | 协议类型(三种 all http https) |
-| location | url路由 空则为不限制 |
-| client\_id | 客户端id |
-| target | 内网目标(ip:端口) |
-| header | request header 请求头 |
-| hostchange | request host 请求主机 |
-| id | 需要修改的域名解析id |
-
-***
-删除域名解析
-
-```
-POST /index/delhost/
-```
-
-| 参数 | 含义 |
-| --- | --- |
-| id | 需要删除的域名解析id |
-
-***
 获取单条隧道信息
 
 ```

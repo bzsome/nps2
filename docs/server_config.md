@@ -8,8 +8,6 @@ web_password | web界面管理密码
 web_username | web界面管理账号
 web_base_url | web管理主路径,用于将web管理置于代理子路径后面
 bridge_port  | 服务端客户端通信端口
-https_proxy_port | 域名代理https代理监听端口
-http_proxy_port | 域名代理http代理监听端口
 auth_key|web api密钥
 bridge_type|客户端与服务端连接方式kcp或tcp
 public_vkey|客户端以配置文件模式启动时的密钥，设置为空表示关闭客户端配置文件连接模式

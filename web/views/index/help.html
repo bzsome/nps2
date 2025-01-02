@@ -10,35 +10,7 @@
         </div>
     </div>
 </div>
-<div class="row">
 
-    <div class="col-md-12">
-        <div class="tile">
-            <h3 class="tile-title">域名代理模式</h3>
-            <p>
-                <b>适用范围：</b> 小程序开发、微信公众号开发、产品演示
-            </p>
-            <p>
-                <b>假设场景：</b>
-            <li>有一个域名proxy.com，有一台公网机器ip为{{.ip}}</li>
-            <li>两个内网开发站点127.0.0.1:81，127.0.0.1:82</li>
-            <li>想通过a.proxy.com访问127.0.0.1:81，通过b.proxy.com访问127.0.0.1:82</li>
-            </p>
-            <p><b>使用步骤：</b></p>
-            <ul>
-                <li>将*.proxy.com解析到公网服务器{{.ip}}</li>
-                <li>在客户端管理中创建一个客户端，记录下验证密钥</li>
-                <li>点击该客户端的域名管理，添加两条规则规则：1、域名：a.proxy.com，内网目标：127.0.0.1:81，2、域名：b.proxy.com，内网目标：127.0.0.1:82</li>
-                <li>内网客户端运行<code>
-                    <pre>./npc -server={{.ip}}:{{.p}} -vkey=客户端的密钥</pre>
-                </code></pre></li>
-                <li>现在访问a.proxy.com，b.proxy.com即可成功</li>
-            </ul>
-            <p>注：上文中提到公网ip（{{.ip}}）为系统自动识别，如果是在测试环境中请自行对应，<b>如需使用https请在配置文件中将https端口设置为443，和将对应的证书文件路径添加到配置文件中
-            </b></p>
-        </div>
-    </div>
-</div>
 <div class="row">
     <div class="col-md-6">
         <div class="tile">
@@ -132,7 +104,7 @@
     </div>
     <div class="col-md-12">
         <div class="tile">
-            <p><b>单个客户端可以添加多条隧道或者域名解析</b></p>
+            <p><b>单个客户端可以添加多条隧道</b></p>
         </div>
     </div>
 </div>

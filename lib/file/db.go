@@ -2,7 +2,6 @@ package file
 
 import (
 	"errors"
-	"net/http"
 	"sort"
 	"strings"
 	"sync"
@@ -305,87 +304,5 @@ func (s *DbUtils) GetClientIdByVkey(vkey string) (id int, err error) {
 		return
 	}
 	err = errors.New("未找到客户端")
-	return
-}
-
-func (s *DbUtils) GetHostById(id int) (h *Host, err error) {
-	if v, ok := s.JsonDb.Hosts.Load(id); ok {
-		h = v.(*Host)
-		return
-	}
-	err = errors.New("The host could not be parsed")
-	return
-}
-
-// get key by host from x
-func (s *DbUtils) GetInfoByHost(host string, r *http.Request) (h *Host, err error) {
-	var hosts []*Host               // 存储所有可能匹配的 Host 项
-	host = common.GetIpByAddr(host) // 处理带端口的主机名
-
-	// 遍历数据库中的所有 Host 项
-	s.JsonDb.Hosts.Range(func(key, value interface{}) bool {
-		v := value.(*Host)
-
-		// 过滤掉关闭的 Host 项和协议不匹配的项
-		if v.IsClose || (v.Scheme != "all" && v.Scheme != r.URL.Scheme) {
-			return true
-		}
-
-		// 如果 Location 没有设置，默认匹配所有路径
-		if v.Location == "" {
-			v.Location = "/"
-		}
-
-		// 如果请求的路径为空（如使用 WebSocket 协议时），默认路径为 /
-		requestPath := r.RequestURI
-		if requestPath == "" {
-			requestPath = "/"
-		}
-
-		// 判断是否匹配域名和路径
-		if v.Host == host && strings.HasPrefix(requestPath, v.Location) {
-			hosts = append(hosts, v) // 完全匹配的域名，路径匹配
-		} else if strings.HasPrefix(v.Host, "*") {
-			patternDomain := v.Host[1:] // 去掉 `*`
-			if strings.HasSuffix(host, patternDomain) && strings.HasPrefix(requestPath, v.Location) {
-				hosts = append(hosts, v) // 通配符匹配的域名，路径匹配
-			}
-		}
-		return true
-	})
-
-	// 查找最合适的匹配项
-	var bestMatch *Host
-	for _, v := range hosts {
-		if bestMatch == nil {
-			bestMatch = v
-			continue
-		}
-
-		// 比较域名长度，去掉通配符后的长度越长优先级越高
-		iDomainLength := len(strings.TrimPrefix(v.Host, "*"))
-		bestDomainLength := len(strings.TrimPrefix(bestMatch.Host, "*"))
-		if iDomainLength > bestDomainLength {
-			bestMatch = v
-		} else if iDomainLength == bestDomainLength {
-			// 如果域名长度相同，则比较路径长度，路径越长优先级越高
-			if len(v.Location) > len(bestMatch.Location) {
-				bestMatch = v
-			} else if len(v.Location) == len(bestMatch.Location) {
-				// 如果域名长度和路径长度相同，优先匹配域名完全一致的项
-				if !strings.HasPrefix(v.Host, "*") && strings.HasPrefix(bestMatch.Host, "*") {
-					bestMatch = v
-				}
-			}
-		}
-	}
-
-	// 如果找到匹配项，则返回；否则返回错误
-	if bestMatch != nil {
-		h = bestMatch
-		return
-	}
-
-	err = errors.New("The host could not be parsed")
 	return
 }

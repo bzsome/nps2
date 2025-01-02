@@ -86,24 +86,6 @@ target_ip=10.1.50.2
 
 注意：当服务端为kcp时，客户端连接时也需要使用相同配置，无配置文件模式加上参数type=kcp,配置文件模式在配置文件中设置tp=kcp
 
-## 域名泛解析
-支持域名泛解析，例如将host设置为*.proxy.com，a.proxy.com、b.proxy.com等都将解析到同一目标，在web管理中或客户端配置文件中将host设置为此格式即可。
-
-## URL路由
-本代理支持根据URL将同一域名转发到不同的内网服务器，可在web中或客户端配置文件中设置，此参数也可忽略，例如在客户端配置文件中
-
-```ini
-[web1]
-host=a.proxy.com
-target_addr=127.0.0.1:7001
-location=/test
-[web2]
-host=a.proxy.com
-target_addr=127.0.0.1:7002
-location=/static
-```
-对于`a.proxy.com/test`将转发到`web1`，对于`a.proxy.com/static`将转发到`web2`
-
 ## 限制ip访问
 如果将一些危险性高的端口例如ssh端口暴露在公网上，可能会带来一些风险，本代理支持限制ip访问。
 

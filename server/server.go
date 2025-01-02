@@ -129,14 +129,6 @@ func NewMode(Bridge *bridge.Bridge, c *file.Tunnel) proxy.Service {
 		}
 		AddTask(t)
 		service = proxy.NewWebServer(Bridge)
-	case "httpHostServer":
-		httpPort, _ := beego.AppConfig.Int("http_proxy_port")
-		httpsPort, _ := beego.AppConfig.Int("https_proxy_port")
-		useCache, _ := beego.AppConfig.Bool("http_cache")
-		cacheLen, _ := beego.AppConfig.Int("http_cache_length")
-		addOrigin, _ := beego.AppConfig.Bool("http_add_origin_header")
-		httpOnlyPass := beego.AppConfig.String("x_nps_http_only")
-		service = proxy.NewHttp(Bridge, c, httpPort, httpsPort, useCache, cacheLen, httpOnlyPass, addOrigin)
 	}
 	return service
 }
@@ -444,8 +436,6 @@ func GetDashboardData() map[string]interface{} {
 	data["socks5Count"] = socks5
 	data["httpProxyCount"] = http
 	data["bridgeType"] = beego.AppConfig.String("bridge_type")
-	data["httpProxyPort"] = beego.AppConfig.String("http_proxy_port")
-	data["httpsProxyPort"] = beego.AppConfig.String("https_proxy_port")
 	data["ipLimit"] = beego.AppConfig.String("ip_limit")
 	data["flowStoreInterval"] = beego.AppConfig.String("flow_store_interval")
 	data["logLevel"] = beego.AppConfig.String("log_level")

@@ -2,8 +2,6 @@
 ## 获取用户真实ip
 如需使用需要在`nps.conf`中设置`http_add_origin_header=true`
 
-在域名代理模式中，可以通过request请求 header 中的 X-Forwarded-For 和 X-Real-IP 来获取用户真实 IP。
-
 **本代理前会在每一个http(s)请求中添加了这两个 header。**
 
 ## 热更新支持
