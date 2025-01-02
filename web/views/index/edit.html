@@ -13,13 +13,11 @@
                                 <span id="casetcp" langtag="info-casetcp"></span>
                                 <span id="caseudp" langtag="info-caseudp"></span>
                                 <span id="casesocks5" langtag="info-casesocks5"></span>
-                                <span id="casefile" langtag="info-casefile"></span>
                             </span>
                             <select class="form-control" name="type" id="type">
                                 <option value="tcp" langtag="scheme-tcp"></option>
                                 <option value="udp" langtag="scheme-udp"></option>
                                 <option value="socks5" langtag="scheme-socks5"></option>
-                            {{/*<option value="file" langtag="scheme-file"></option>*/}}
                             </select>
                         </div>
                     </div>
@@ -80,20 +78,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group" id="local_path">
-                        <label class="col-sm-2 control-label font-bold" langtag="word-localpath"></label>
-                        <div class="col-sm-10">
-                            <input value="{{.t.LocalPath}}" class="form-control" type="text" name="local_path" placeholder="" langtag="info-suchaslocalpath">
-                        </div>
-                    </div>
-
-                    <div class="form-group" id="strip_pre">
-                        <label class="col-sm-2 control-label font-bold" langtag="word-stripprefix"></label>
-                        <div class="col-sm-10">
-                            <input value="{{.t.StripPre}}" class="form-control" type="text" name="strip_pre" placeholder="" langtag="info-suchasstripprefix">
-                        </div>
-                    </div>
-
                     <div class="form-group" id="password">
                         <label class="col-sm-2 control-label font-bold" langtag="word-identificationkey"></label>
                         <div class="col-sm-10">
@@ -120,12 +104,11 @@
 </div>
 <script>
     var arr = []
-    arr["all"] = ["port", "target", "password", "local_path", "strip_pre", "proxy_protocol", "local_proxy"]
+    arr["all"] = ["port", "target", "password", "proxy_protocol", "local_proxy"]
     arr["tcp"] = ["client_id", "port", "target", "proxy_protocol", "local_proxy"]
     arr["udp"] = ["client_id", "port", "target", "local_proxy"]
     arr["socks5"] = ["client_id", "port"]
     arr["secret"] = ["client_id", "target", "password"]
-    arr["file"] = ["client_id", "port", "local_path", "strip_pre"]
 
     function resetForm() {
         $(".form-group[id]").css("display", "none");

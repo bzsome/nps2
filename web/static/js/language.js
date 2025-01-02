@@ -38,11 +38,16 @@
 	}
 
 	function setchartlang (langobj,chartobj) {
+		if (chartobj == undefined){
+			debugger;
+		}
 		if ( $.type (langobj) == 'string' ) return langobj;
 		if ( $.type (langobj) == 'chartobj' ) return false;
+		if ( $.type (chartobj) == 'undefined' ) return false;
 		var flag = true;
 		for (key in langobj) {
 			var item = key;
+			//TODO 位置原因hasOwnProperty会报错
 			children = (chartobj.hasOwnProperty(item)) ? setchartlang (langobj[item],chartobj[item]) : setchartlang (langobj[item],undefined);
 			switch ($.type(children)) {
 				case 'string':

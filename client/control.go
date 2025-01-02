@@ -2,7 +2,6 @@ package client
 
 import (
 	"crypto/tls"
-	"encoding/base64"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -267,10 +266,4 @@ func NewConn(tp string, vkey string, server string, connType string, proxyUrl st
 	c.SetAlive(tp)
 
 	return c, nil
-}
-
-// get a basic auth string
-func basicAuth(username, password string) string {
-	auth := username + ":" + password
-	return base64.StdEncoding.EncodeToString([]byte(auth))
 }

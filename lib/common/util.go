@@ -7,7 +7,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"html/template"
 	"io"
@@ -15,7 +14,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -23,38 +21,6 @@ import (
 
 	"ehang.io/nps/lib/crypt"
 )
-
-// Get the corresponding IP address through domain name
-func GetHostByName(hostname string) string {
-	if !DomainCheck(hostname) {
-		return hostname
-	}
-	ips, _ := net.LookupIP(hostname)
-	if ips != nil {
-		for _, v := range ips {
-			if v.To4() != nil {
-				return v.String()
-			}
-			// If IPv4 not found, return IPv6
-			if v.To16() != nil {
-				return v.String()
-			}
-		}
-	}
-	return ""
-}
-
-// Check the legality of domain
-func DomainCheck(domain string) bool {
-	var match bool
-	IsLine := "^((http://)|(https://))?([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}(/)"
-	NotLine := "^((http://)|(https://))?([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}"
-	match, _ = regexp.MatchString(IsLine, domain)
-	if !match {
-		match, _ = regexp.MatchString(NotLine, domain)
-	}
-	return match
-}
 
 // CheckAuthWithAccountMap
 // u current login user
@@ -72,7 +38,7 @@ func CheckAuthWithAccountMap(u, p, user, passwd string, accountMap map[string]st
 	if len(u) == 0 {
 		return false
 	}
-    
+
 	if u == user && p == passwd {
 		return true
 	}
@@ -121,14 +87,6 @@ func GetBoolByStr(s string) bool {
 	return false
 }
 
-// get str by bool
-func GetStrByBool(b bool) string {
-	if b {
-		return "1"
-	}
-	return "0"
-}
-
 // int
 func GetIntNoErrByStr(str string) int {
 	i, _ := strconv.Atoi(strings.TrimSpace(str))
@@ -138,54 +96,6 @@ func GetIntNoErrByStr(str string) int {
 // Get verify value
 func Getverifyval(vkey string) string {
 	return crypt.Md5(vkey)
-}
-
-// Change headers and host of request
-func ChangeHostAndHeader(r *http.Request, host string, header string, addr string, httpOnly bool) {
-	// 设置 Host 头部信息
-	if host != "" {
-		r.Host = host
-	}
-
-	// 设置自定义头部信息
-	if header != "" {
-		h := strings.Split(strings.ReplaceAll(header, "\r\n", "\n"), "\n")
-		for _, v := range h {
-			hd := strings.SplitN(v, ":", 2)
-			if len(hd) == 2 {
-				r.Header.Set(strings.TrimSpace(hd[0]), strings.TrimSpace(hd[1]))
-			}
-		}
-	}
-
-	logs.Debug("get X-Remote-Addr = " + addr)
-	// 处理 IPv6 地址
-	if strings.HasPrefix(addr, "[") && strings.Contains(addr, "]") {
-		addr = addr[1:strings.LastIndex(addr, "]")]
-	} else {
-		addr = strings.Split(addr, ":")[0]
-	}
-	logs.Debug("get X-Remote-IP = " + addr)
-
-	// 获取 X-Forwarded-For 头部的先前值
-	if prior, ok := r.Header["X-Forwarded-For"]; ok {
-		addr = strings.Join(prior, ", ") + ", " + addr
-	}
-
-	// 判断是否需要添加真实 IP 信息
-	var addOrigin bool
-	if !httpOnly {
-		addOrigin, _ = beego.AppConfig.Bool("http_add_origin_header")
-	} else {
-		addOrigin = false
-	}
-
-	// 添加 X-Forwarded-For 和 X-Real-IP 头部信息
-	if addOrigin {
-		logs.Debug("set X-Forwarded-For X-Real-IP = " + addr)
-		r.Header.Set("X-Forwarded-For", addr)
-		r.Header.Set("X-Real-IP", addr)
-	}
 }
 
 // Read file content by file path
@@ -339,37 +249,6 @@ func GetIpByAddr(addr string) string {
 	return arr[0]
 }
 
-// get port from the complete address
-func GetPortByAddr(addr string) int {
-	// Handle IPv6 addresses properly
-	if strings.HasPrefix(addr, "[") && strings.Contains(addr, "]:") {
-		lastColonIndex := strings.LastIndex(addr, ":")
-		p, err := strconv.Atoi(addr[lastColonIndex+1:])
-		if err != nil {
-			return 0
-		}
-		return p
-	} else if strings.Contains(addr, ":") {
-		lastColonIndex := strings.LastIndex(addr, ":")
-		if lastColonIndex != -1 && strings.Count(addr, ":") > 1 {
-			p, err := strconv.Atoi(addr[lastColonIndex+1:])
-			if err != nil {
-				return 0
-			}
-			return p
-		}
-	}
-	arr := strings.Split(addr, ":")
-	if len(arr) < 2 {
-		return 0
-	}
-	p, err := strconv.Atoi(arr[len(arr)-1])
-	if err != nil {
-		return 0
-	}
-	return p
-}
-
 func in(target string, str_array []string) bool {
 	sort.Strings(str_array)
 	index := sort.SearchStrings(str_array, target)
@@ -418,15 +297,6 @@ func CopyBuffer(dst io.Writer, src io.Reader, label ...string) (written int64, e
 		}
 	}
 	return written, err
-}
-
-// send this ip forget to get a local udp port
-func GetLocalUdpAddr() (net.Conn, error) {
-	tmpConn, err := net.Dial("udp", "114.114.114.114:53")
-	if err != nil {
-		return nil, err
-	}
-	return tmpConn, tmpConn.Close()
 }
 
 // parse template
@@ -509,15 +379,6 @@ func GeSynctMapLen(m sync.Map) int {
 		return true
 	})
 	return c
-}
-
-func GetExtFromPath(path string) string {
-	s := strings.Split(path, ".")
-	re, err := regexp.Compile(`(\w+)`)
-	if err != nil {
-		return ""
-	}
-	return string(re.Find([]byte(s[0])))
 }
 
 var externalIp string

@@ -7,11 +7,9 @@ import (
 	"sort"
 	"sync"
 
-	"ehang.io/nps/bridge"
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/conn"
 	"ehang.io/nps/lib/file"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 )
 
@@ -24,7 +22,7 @@ type NetBridge interface {
 	SendLinkInfo(clientId int, link *conn.Link, t *file.Tunnel) (target net.Conn, err error)
 }
 
-//BaseServer struct
+// BaseServer struct
 type BaseServer struct {
 	id              int
 	bridge          NetBridge
@@ -34,18 +32,7 @@ type BaseServer struct {
 	sync.Mutex
 }
 
-func NewBaseServer(bridge *bridge.Bridge, task *file.Tunnel) *BaseServer {
-	allowLocalProxy, _ := beego.AppConfig.Bool("allow_local_proxy")
-	return &BaseServer{
-		bridge:          bridge,
-		task:            task,
-		errorContent:    nil,
-		allowLocalProxy: allowLocalProxy,
-		Mutex:           sync.Mutex{},
-	}
-}
-
-//add the flow
+// add the flow
 func (s *BaseServer) FlowAdd(in, out int64) {
 	s.Lock()
 	defer s.Unlock()
@@ -53,7 +40,7 @@ func (s *BaseServer) FlowAdd(in, out int64) {
 	s.task.Flow.InletFlow += in
 }
 
-//change the flow
+// change the flow
 func (s *BaseServer) FlowAddHost(host *file.Host, in, out int64) {
 	s.Lock()
 	defer s.Unlock()
@@ -61,13 +48,13 @@ func (s *BaseServer) FlowAddHost(host *file.Host, in, out int64) {
 	host.Flow.InletFlow += in
 }
 
-//write fail bytes to the connection
+// write fail bytes to the connection
 func (s *BaseServer) writeConnFail(c net.Conn) {
 	c.Write([]byte(common.ConnectionFailBytes))
 	c.Write(s.errorContent)
 }
 
-//auth check
+// auth check
 func (s *BaseServer) auth(r *http.Request, c *conn.Conn, u, p string, task *file.Tunnel) error {
 	var accountMap map[string]string
 	if task.MultiAccount == nil {
@@ -83,7 +70,7 @@ func (s *BaseServer) auth(r *http.Request, c *conn.Conn, u, p string, task *file
 	return nil
 }
 
-//check flow limit of the client ,and decrease the allow num of client
+// check flow limit of the client ,and decrease the allow num of client
 func (s *BaseServer) CheckFlowAndConnNum(client *file.Client) error {
 	if client.Flow.FlowLimit > 0 && (client.Flow.FlowLimit<<20) < (client.Flow.ExportFlow+client.Flow.InletFlow) {
 		return errors.New("Traffic exceeded")

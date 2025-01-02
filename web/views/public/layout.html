@@ -70,10 +70,6 @@
                     <a href="{{.web_base_url}}/index/socks5"><i class="fa fa-layer-group fa-lg"></i>
                     <span class="nav-label" langtag="scheme-socks5"></span></a>
                 </li>
-                <li class="{{if eq "file" .menu}}active{{end}}">
-                    <a href="{{.web_base_url}}/index/file"><i class="fa fa-briefcase fa-lg"></i>
-                    <span class="nav-label" langtag="scheme-file"></span></a>
-                </li>
                 {{if eq true .isAdmin}}
                 <li class="{{if eq "global" .menu}}active{{end}}">
                 <a href="{{.web_base_url}}/global/index"><i class="fa fa-cog fa-lg"></i>

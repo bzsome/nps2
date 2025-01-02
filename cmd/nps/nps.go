@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"log"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -31,9 +31,8 @@ import (
 )
 
 var (
-	level    string
-	ver      = flag.Bool("version", false, "show current version")
-	confPath = flag.String("conf_path", "", "set current confPath")
+	level string
+	ver   = flag.Bool("version", false, "show current version")
 )
 
 func main() {
@@ -88,7 +87,7 @@ func main() {
 	}
 	logMaxSize, err := beego.AppConfig.Int("log_max_size")
 	if err != nil {
-	    logMaxSize = 5
+		logMaxSize = 5
 	}
 
 	// init service

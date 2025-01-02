@@ -285,13 +285,6 @@ func (s *Bridge) typeDeal(typeVal string, c *conn.Conn, id int, vs string) {
 	case common.WORK_REGISTER:
 		go s.register(c)
 
-	case common.WORK_FILE:
-		muxConn := nps_mux.NewMux(c.Conn, s.tunnelType, s.disconnectTime)
-		if v, loaded := s.Client.LoadOrStore(id, NewClient(nil, muxConn, nil, vs)); loaded {
-			client := v.(*Client)
-			client.file = muxConn
-		}
-
 	}
 
 	c.SetAlive(s.tunnelType) // 设置连接为活动状态，避免超时断开
@@ -338,11 +331,7 @@ func (s *Bridge) SendLinkInfo(clientId int, link *conn.Link, t *file.Tunnel) (ta
 	}
 
 	var tunnel *nps_mux.Mux
-	if t != nil && t.Mode == "file" {
-		tunnel = client.file
-	} else {
-		tunnel = client.tunnel
-	}
+	tunnel = client.tunnel
 
 	if tunnel == nil {
 		err = errors.New("the client connect error")
@@ -351,13 +340,6 @@ func (s *Bridge) SendLinkInfo(clientId int, link *conn.Link, t *file.Tunnel) (ta
 
 	target, err = tunnel.NewConn()
 	if err != nil {
-		return
-	}
-
-	if t != nil && t.Mode == "file" {
-		//TODO if t.mode is file ,not use crypt or compress
-		link.Crypt = false
-		link.Compress = false
 		return
 	}
 

@@ -42,17 +42,6 @@ func (s *IndexController) Socks5() {
 	s.display("index/list")
 }
 
-func (s *IndexController) File() {
-	s.SetInfo("file server")
-	s.SetType("file")
-	s.display("index/list")
-}
-func (s *IndexController) Host() {
-	s.SetInfo("host")
-	s.SetType("hostServer")
-	s.display("index/list")
-}
-
 func (s *IndexController) All() {
 	s.Data["menu"] = "client"
 	clientId := s.getEscapeString("client_id")
@@ -87,13 +76,11 @@ func (s *IndexController) Add() {
 				ProxyProtocol: s.GetIntNoErr("proxy_protocol"),
 				LocalProxy:    (clientId > 0 && s.GetBoolNoErr("local_proxy")) || clientId <= 0,
 			},
-			Id:        id,
-			Status:    true,
-			Remark:    s.getEscapeString("remark"),
-			Password:  s.getEscapeString("password"),
-			LocalPath: s.getEscapeString("local_path"),
-			StripPre:  s.getEscapeString("strip_pre"),
-			Flow:      &file.Flow{},
+			Id:       id,
+			Status:   true,
+			Remark:   s.getEscapeString("remark"),
+			Password: s.getEscapeString("password"),
+			Flow:     &file.Flow{},
 		}
 
 		if t.Port <= 0 {
@@ -170,8 +157,6 @@ func (s *IndexController) Edit() {
 			t.Target = &file.Target{TargetStr: strings.ReplaceAll(s.getEscapeString("target"), "\r\n", "\n")}
 			t.Password = s.getEscapeString("password")
 			t.Id = id
-			t.LocalPath = s.getEscapeString("local_path")
-			t.StripPre = s.getEscapeString("strip_pre")
 			t.Remark = s.getEscapeString("remark")
 			t.Target.ProxyProtocol = s.GetIntNoErr("proxy_protocol")
 			t.Target.LocalProxy = (clientId > 0 && s.GetBoolNoErr("local_proxy")) || clientId <= 0

@@ -21,21 +21,12 @@ type CommonConfig struct {
 	DisconnectTime   int
 }
 
-type LocalServer struct {
-	Type     string
-	Port     int
-	Ip       string
-	Password string
-	Target   string
-}
-
 type Config struct {
 	content      string
 	title        []string
 	CommonConfig *CommonConfig
 	Tasks        []*file.Tunnel
 	Healths      []*file.Health
-	LocalServer  []*LocalServer
 }
 
 func NewConfig(path string) (c *Config, err error) {
@@ -193,10 +184,6 @@ func dealTunnel(s string) *file.Tunnel {
 			t.TargetAddr = item[1]
 		case "password":
 			t.Password = item[1]
-		case "local_path":
-			t.LocalPath = item[1]
-		case "strip_pre":
-			t.StripPre = item[1]
 		case "multi_account":
 			t.MultiAccount = &file.MultiAccount{}
 			if common.FileExists(item[1]) {

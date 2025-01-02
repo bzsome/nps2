@@ -147,29 +147,6 @@ mode | socks5
 server_port | 在服务端的代理端口
 multi_account | socks5多账号配置文件（可选),配置后使用basic_username和basic_password无法通过认证 <br> multi_account.conf要与可执行文件npc同一目录，或者npc.conf里面写相对路径,conf/multi_account.conf
 
-#### 文件访问模式
-利用nps提供一个公网可访问的本地文件服务，此模式仅客户端使用配置文件模式方可启动
-
-```ini
-[common]
-server_addr=1.1.1.1:8024
-vkey=123
-[file]
-mode=file
-server_port=9100
-local_path=/tmp/
-strip_pre=/web/
-````
-
-项 | 含义
----|---
-mode | file
-server_port | 服务端开启的端口
-local_path|本地文件目录
-strip_pre|前缀
-
-对于`strip_pre`，访问公网`ip:9100/web/`相当于访问`/tmp/`目录
-
 #### 断线重连
 ```ini
 [common]
