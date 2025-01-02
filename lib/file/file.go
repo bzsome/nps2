@@ -29,7 +29,6 @@ func NewJsonDb(runPath string) *JsonDb {
 
 type JsonDb struct {
 	Tasks            sync.Map
-	Hosts            sync.Map
 	HostsTmp         sync.Map
 	Clients          sync.Map
 	Global           *Glob
@@ -98,23 +97,6 @@ func (s *JsonDb) LoadClientFromJsonFile() {
 	})
 }
 
-func (s *JsonDb) LoadHostFromJsonFile() {
-	loadSyncMapFromFile(s.HostFilePath, func(v string) {
-		var err error
-		post := new(Host)
-		if json.Unmarshal([]byte(v), &post) != nil {
-			return
-		}
-		if post.Client, err = s.GetClient(post.Client.Id); err != nil {
-			return
-		}
-		s.Hosts.Store(post.Id, post)
-		if post.Id > int(s.HostIncreaseId) {
-			s.HostIncreaseId = int32(post.Id)
-		}
-	})
-}
-
 func (s *JsonDb) LoadGlobalFromJsonFile() {
 	loadSyncMapFromFileWithSingleJson(s.GlobalFilePath, func(v string) {
 		post := new(Glob)
@@ -132,14 +114,6 @@ func (s *JsonDb) GetClient(id int) (c *Client, err error) {
 	}
 	err = errors.New("未找到客户端")
 	return
-}
-
-var hostLock sync.Mutex
-
-func (s *JsonDb) StoreHostToJsonFile() {
-	hostLock.Lock()
-	storeSyncMapToFile(s.Hosts, s.HostFilePath)
-	hostLock.Unlock()
 }
 
 var taskLock sync.Mutex

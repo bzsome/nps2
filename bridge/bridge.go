@@ -145,37 +145,10 @@ func (s *Bridge) GetHealthFromClient(id int, c *conn.Conn) {
 				}
 				return true
 			})
-			file.GetDb().JsonDb.Hosts.Range(func(key, value interface{}) bool {
-				v := value.(*file.Host)
-				if v.Client.Id == id && strings.Contains(v.Target.TargetStr, info) {
-					v.Lock()
-					if v.Target.TargetArr == nil || (len(v.Target.TargetArr) == 0 && len(v.HealthRemoveArr) == 0) {
-						v.Target.TargetArr = common.TrimArr(strings.Split(v.Target.TargetStr, "\n"))
-					}
-					v.Target.TargetArr = common.RemoveArrVal(v.Target.TargetArr, info)
-					if v.HealthRemoveArr == nil {
-						v.HealthRemoveArr = make([]string, 0)
-					}
-					v.HealthRemoveArr = append(v.HealthRemoveArr, info)
-					v.Unlock()
-				}
-				return true
-			})
 		} else { //the status is false,remove target from the targetArr
 			file.GetDb().JsonDb.Tasks.Range(func(key, value interface{}) bool {
 				v := value.(*file.Tunnel)
 				if v.Client.Id == id && v.Mode == "tcp" && common.IsArrContains(v.HealthRemoveArr, info) && !common.IsArrContains(v.Target.TargetArr, info) {
-					v.Lock()
-					v.Target.TargetArr = append(v.Target.TargetArr, info)
-					v.HealthRemoveArr = common.RemoveArrVal(v.HealthRemoveArr, info)
-					v.Unlock()
-				}
-				return true
-			})
-
-			file.GetDb().JsonDb.Hosts.Range(func(key, value interface{}) bool {
-				v := value.(*file.Host)
-				if v.Client.Id == id && common.IsArrContains(v.HealthRemoveArr, info) && !common.IsArrContains(v.Target.TargetArr, info) {
 					v.Lock()
 					v.Target.TargetArr = append(v.Target.TargetArr, info)
 					v.HealthRemoveArr = common.RemoveArrVal(v.HealthRemoveArr, info)
@@ -457,13 +430,6 @@ loop:
 			}
 
 			var strBuilder strings.Builder
-			file.GetDb().JsonDb.Hosts.Range(func(key, value interface{}) bool {
-				v := value.(*file.Host)
-				if v.Client.Id == id {
-					strBuilder.WriteString(v.Remark + common.CONN_DATA_SEQ)
-				}
-				return true
-			})
 
 			file.GetDb().JsonDb.Tasks.Range(func(key, value interface{}) bool {
 				v := value.(*file.Tunnel)
@@ -494,29 +460,6 @@ loop:
 			c.WriteAddOk()
 			c.Write([]byte(client.VerifyKey))
 			s.Client.Store(client.Id, NewClient(nil, nil, nil, ""))
-
-		case common.NEW_HOST:
-			h, err := c.GetHostInfo()
-			if err != nil {
-				fail = true
-				c.WriteAddFail()
-				break loop
-			}
-
-			h.Client = client
-			if h.Location == "" {
-				h.Location = "/"
-			}
-
-			if !client.HasHost(h) {
-				if file.GetDb().IsHostExist(h) {
-					fail = true
-					c.WriteAddFail()
-					break loop
-				}
-				file.GetDb().NewHost(h)
-			}
-			c.WriteAddOk()
 
 		case common.NEW_TASK:
 			t, err := c.GetTaskInfo()

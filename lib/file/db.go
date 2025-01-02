@@ -26,7 +26,6 @@ func GetDb() *DbUtils {
 		jsonDb := NewJsonDb(common.GetRunPath())
 		jsonDb.LoadClientFromJsonFile()
 		jsonDb.LoadTaskFromJsonFile()
-		jsonDb.LoadHostFromJsonFile()
 		jsonDb.LoadGlobalFromJsonFile()
 		Db = &DbUtils{JsonDb: jsonDb}
 	})
@@ -137,61 +136,6 @@ func (s *DbUtils) GetTask(id int) (t *Tunnel, err error) {
 	}
 	err = errors.New("not found")
 	return
-}
-
-func (s *DbUtils) DelHost(id int) error {
-	s.JsonDb.Hosts.Delete(id)
-	s.JsonDb.StoreHostToJsonFile()
-	return nil
-}
-
-func (s *DbUtils) IsHostExist(h *Host) bool {
-	var exist bool
-	s.JsonDb.Hosts.Range(func(key, value interface{}) bool {
-		v := value.(*Host)
-		if v.Id != h.Id && v.Host == h.Host && h.Location == v.Location && (v.Scheme == "all" || v.Scheme == h.Scheme) {
-			exist = true
-			return false
-		}
-		return true
-	})
-	return exist
-}
-
-func (s *DbUtils) NewHost(t *Host) error {
-	if t.Location == "" {
-		t.Location = "/"
-	}
-	if s.IsHostExist(t) {
-		return errors.New("host has exist")
-	}
-	t.Flow = new(Flow)
-	s.JsonDb.Hosts.Store(t.Id, t)
-	s.JsonDb.StoreHostToJsonFile()
-	return nil
-}
-
-func (s *DbUtils) GetHost(start, length int, id int, search string) ([]*Host, int) {
-	list := make([]*Host, 0)
-	var cnt int
-	keys := GetMapKeys(s.JsonDb.Hosts, false, "", "")
-	for _, key := range keys {
-		if value, ok := s.JsonDb.Hosts.Load(key); ok {
-			v := value.(*Host)
-			if search != "" && !(v.Id == common.GetIntNoErrByStr(search) || strings.Contains(v.Host, search) || strings.Contains(v.Remark, search) || strings.Contains(v.Client.VerifyKey, search)) {
-				continue
-			}
-			if id == 0 || v.Client.Id == id {
-				cnt++
-				if start--; start < 0 {
-					if length--; length >= 0 {
-						list = append(list, v)
-					}
-				}
-			}
-		}
-	}
-	return list, cnt
 }
 
 func (s *DbUtils) DelClient(id int) error {

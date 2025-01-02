@@ -372,20 +372,6 @@ func DelTunnelAndHostByClientId(clientId int, justDelNoStore bool) {
 	for _, id := range ids {
 		DelTask(id)
 	}
-	ids = ids[:0]
-	file.GetDb().JsonDb.Hosts.Range(func(key, value interface{}) bool {
-		v := value.(*file.Host)
-		if justDelNoStore && !v.NoStore {
-			return true
-		}
-		if v.Client.Id == clientId {
-			ids = append(ids, v.Id)
-		}
-		return true
-	})
-	for _, id := range ids {
-		file.GetDb().DelHost(id)
-	}
 }
 
 // close the client
@@ -396,7 +382,6 @@ func DelClientConnect(clientId int) {
 func GetDashboardData() map[string]interface{} {
 	data := make(map[string]interface{})
 	data["version"] = version.VERSION
-	data["hostCount"] = common.GeSynctMapLen(file.GetDb().JsonDb.Hosts)
 	data["clientCount"] = common.GeSynctMapLen(file.GetDb().JsonDb.Clients)
 	if beego.AppConfig.String("public_vkey") != "" { //remove public vkey
 		data["clientCount"] = data["clientCount"].(int) - 1
@@ -497,7 +482,6 @@ func flowSession(m time.Duration) {
 	for {
 		select {
 		case <-ticker.C:
-			file.GetDb().JsonDb.StoreHostToJsonFile()
 			file.GetDb().JsonDb.StoreTasksToJsonFile()
 			file.GetDb().JsonDb.StoreClientsToJsonFile()
 			file.GetDb().JsonDb.StoreGlobalToJsonFile()

@@ -64,13 +64,6 @@ func GetTaskStatus(path string) {
 		log.Fatalln(err)
 	} else {
 		arr := strings.Split(string(b), common.CONN_DATA_SEQ)
-		for _, v := range cnf.Hosts {
-			if common.InStrArr(arr, v.Remark) {
-				log.Println(v.Remark, "ok")
-			} else {
-				log.Println(v.Remark, "not running")
-			}
-		}
 		for _, v := range cnf.Tasks {
 			ports := common.GetPorts(v.Ports)
 			if v.Mode == "secret" {
@@ -151,18 +144,6 @@ func StartFromFile(path string) {
 		if err := ioutil.WriteFile(filepath.Join(common.GetTmpPath(), "npc_vkey.txt"), []byte(vkey), 0600); err != nil {
 			logs.Debug("Failed to write vkey file:", err)
 			//continue
-		}
-
-		//send hosts to server
-		for _, v := range cnf.Hosts {
-			if _, err := c.SendInfo(v, common.NEW_HOST); err != nil {
-				logs.Error(err)
-				continue
-			}
-			if !c.GetAddStatus() {
-				logs.Error(errAdd, v.Host)
-				continue
-			}
 		}
 
 		//send  task to server
