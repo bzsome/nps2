@@ -21,7 +21,6 @@ func NewJsonDb(runPath string) *JsonDb {
 	return &JsonDb{
 		RunPath:        runPath,
 		TaskFilePath:   filepath.Join(runPath, "conf", "tasks.json"),
-		HostFilePath:   filepath.Join(runPath, "conf", "hosts.json"),
 		ClientFilePath: filepath.Join(runPath, "conf", "clients.json"),
 		GlobalFilePath: filepath.Join(runPath, "conf", "global.json"),
 	}
@@ -35,9 +34,7 @@ type JsonDb struct {
 	RunPath          string
 	ClientIncreaseId int32  //client increased id
 	TaskIncreaseId   int32  //task increased id
-	HostIncreaseId   int32  //host increased id
 	TaskFilePath     string //task file path
-	HostFilePath     string //host file path
 	ClientFilePath   string //client file path
 	GlobalFilePath   string //global file path
 }
@@ -146,10 +143,6 @@ func (s *JsonDb) GetClientId() int32 {
 
 func (s *JsonDb) GetTaskId() int32 {
 	return atomic.AddInt32(&s.TaskIncreaseId, 1)
-}
-
-func (s *JsonDb) GetHostId() int32 {
-	return atomic.AddInt32(&s.HostIncreaseId, 1)
 }
 
 func loadSyncMapFromFile(filePath string, f func(value string)) {

@@ -6,7 +6,6 @@ import (
 	"crypto/cipher"
 	"crypto/md5"
 	"encoding/hex"
-	"errors"
 	"math/rand"
 	"time"
 )
@@ -30,16 +29,6 @@ func PKCS5Padding(ciphertext []byte, blockSize int) []byte {
 	padding := blockSize - len(ciphertext)%blockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(ciphertext, padtext...)
-}
-
-// Remove excess
-func PKCS5UnPadding(origData []byte) (error, []byte) {
-	length := len(origData)
-	unpadding := int(origData[length-1])
-	if (length - unpadding) < 0 {
-		return errors.New("len error"), nil
-	}
-	return nil, origData[:(length - unpadding)]
 }
 
 // Generate 32-bit MD5 strings

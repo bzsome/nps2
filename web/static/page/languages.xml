@@ -202,10 +202,6 @@
 		<zh-CN>进入</zh-CN>
 		<en-US>go</en-US>
 	</lang>
-	<lang id="word-help">
-		<zh-CN>使用说明</zh-CN>
-		<en-US>Manual</en-US>
-	</lang>
 	<lang id="word-host">
 		<zh-CN>域名</zh-CN>
 		<en-US>Host</en-US>
