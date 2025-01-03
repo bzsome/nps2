@@ -37,7 +37,6 @@ type PortMux struct {
 	managerHost string
 	clientConn  chan *PortConn
 	httpConn    chan *PortConn
-	httpsConn   chan *PortConn
 	managerConn chan *PortConn
 }
 
@@ -47,7 +46,6 @@ func NewPortMux(port int, managerHost string) *PortMux {
 		port:        port,
 		clientConn:  make(chan *PortConn),
 		httpConn:    make(chan *PortConn),
-		httpsConn:   make(chan *PortConn),
 		managerConn: make(chan *PortConn),
 	}
 	pMux.Start()
@@ -123,9 +121,8 @@ func (pMux *PortMux) process(conn net.Conn) {
 		}
 	case CLIENT: // client connection
 		ch = pMux.clientConn
-	default: // https
-		readMore = true
-		ch = pMux.httpsConn
+	default:
+		logs.Warn("不支持的类型" + string(common.BytesToNum(buf)))
 	}
 	if len(rs) == 0 {
 		rs = buf
@@ -143,7 +140,6 @@ func (pMux *PortMux) Close() error {
 	}
 	pMux.isClose = true
 	close(pMux.clientConn)
-	close(pMux.httpsConn)
 	close(pMux.httpConn)
 	close(pMux.managerConn)
 	return pMux.Listener.Close()
@@ -155,10 +151,6 @@ func (pMux *PortMux) GetClientListener() net.Listener {
 
 func (pMux *PortMux) GetHttpListener() net.Listener {
 	return NewPortListener(pMux.httpConn, pMux.Listener.Addr())
-}
-
-func (pMux *PortMux) GetHttpsListener() net.Listener {
-	return NewPortListener(pMux.httpsConn, pMux.Listener.Addr())
 }
 
 func (pMux *PortMux) GetManagerListener() net.Listener {

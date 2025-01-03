@@ -1,45 +1,4 @@
 # 增强功能
-## 使用https
-
-**方式一：** 类似于nginx实现https的处理
-
-在配置文件中将https_proxy_port设置为443或者其他你想配置的端口，将`https_just_proxy`设置为false，nps 重启后，在web管理界面，域名新增或修改界面中修改域名证书和密钥。
-
-**此外：** 可以在`nps.conf`中设置一个默认的https配置，当遇到未在web中设置https证书的域名解析时，将自动使用默认证书，另还有一种情况就是对于某些请求的clienthello不携带sni扩展信息，nps也将自动使用默认证书
-
-
-**方式二：** 在内网对应服务器上设置https
-
-在`nps.conf`中将`https_just_proxy`设置为true，并且打开`https_proxy_port`端口，然后nps将直接转发https请求到内网服务器上，由内网服务器进行https处理
-
-```
-## web管理使用https
-如果web管理需要使用https，可以在配置文件`nps.conf`中设置`web_open_ssl=true`，并配置`web_cert_file`和`web_key_file`
-## web使用Caddy代理
-
-如果将web配置到Caddy代理,实现子路径访问nps,可以这样配置.
-
-假设我们想通过 `http://caddy_ip:caddy_port/nps` 来访问后台, Caddyfile 这样配置:
-
-```Caddyfile
-caddy_ip:caddy_port/nps {
-  ##server_ip 为 nps 服务器IP
-  ##web_port 为 nps 后台端口
-  proxy / http://server_ip:web_port/nps {
-	transparent
-  }
-}
-```
-
-nps.conf 修改 `web_base_url` 为 `/nps` 即可
-```
-web_base_url=/nps
-```
-
-
-## 关闭代理
-
-如需关闭http代理可在配置文件中将http_proxy_port设置为空，如需关闭https代理可在配置文件中将https_proxy_port设置为空。
 
 ## 流量数据持久化
 服务端支持将流量数据持久化，默认情况下是关闭的，如果有需求可以设置`nps.conf`中的`flow_store_interval`参数，单位为分钟

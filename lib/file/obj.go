@@ -162,7 +162,6 @@ type Host struct {
 	KeyFilePath  string
 	NoStore      bool
 	IsClose      bool
-	AutoHttps    bool // 自动https
 	Flow         *Flow
 	Client       *Client
 	Target       *Target //目标

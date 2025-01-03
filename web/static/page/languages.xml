@@ -212,24 +212,6 @@
 		<zh-CN>HTTP 端口</zh-CN>
 		<en-US>HTTP port</en-US>
 	</lang>
-	<lang id="word-httpscert">
-		<zh-CN>HTTPS 证书（pem格式）</zh-CN>
-		<en-US>HTTPS cert</en-US>
-	</lang>
-	<lang id="word-https">HTTPS
-	</lang>
-	<lang id="word-autohttps">
-		<zh-CN>自动HTTPS (301)</zh-CN>
-		<en-US>Auto HTTPS (301)</en-US>
-	</lang>
-	<lang id="word-httpskey">
-		<zh-CN>HTTPS 密钥（key格式）</zh-CN>
-		<en-US>HTTPS key</en-US>
-	</lang>
-	<lang id="word-httpsport">
-		<zh-CN>HTTPS 端口</zh-CN>
-		<en-US>HTTPS port</en-US>
-	</lang>
 	<lang id="word-identificationkey">
 		<zh-CN>唯一标识密钥</zh-CN>
 		<en-US>Unique identification  Key</en-US>
@@ -562,10 +544,6 @@
 	<lang id="info-feature3">
 		<zh-CN>控制全面，同时支持服务端和客户端控制</zh-CN>
 		<en-US>Comprehensive control, both client and server control are allowed.</en-US>
-	</lang>
-	<lang id="info-feature4">
-		<zh-CN>https集成，支持将后端代理和web服务转成https，同时支持多证书</zh-CN>
-		<en-US>Https integration, support to convert backend proxy and web services to https, and support multiple certificates.</en-US>
 	</lang>
 	<lang id="info-feature5">
 		<zh-CN>操作简单，只需简单的配置即可在web ui上完成其余操作</zh-CN>

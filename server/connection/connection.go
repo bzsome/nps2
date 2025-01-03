@@ -12,7 +12,6 @@ import (
 
 var pMux *pmux.PortMux
 var bridgePort string
-var httpsPort string
 var httpPort string
 var webPort string
 
@@ -20,7 +19,7 @@ func InitConnectionService() {
 	bridgePort = beego.AppConfig.String("bridge_port")
 	webPort = beego.AppConfig.String("web_port")
 
-	if httpPort == bridgePort || httpsPort == bridgePort || webPort == bridgePort {
+	if httpPort == bridgePort || webPort == bridgePort {
 		port, err := strconv.Atoi(bridgePort)
 		if err != nil {
 			logs.Error(err)
